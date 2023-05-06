@@ -6,7 +6,7 @@ function Navbar() {
     <AppBar position="static">
       <Toolbar>
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
-          My App
+            Mini football
         </Typography>
         <Button color="inherit" component={Link} to="/">
           Home
