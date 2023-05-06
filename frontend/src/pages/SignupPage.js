@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Box, Button, TextField, Typography } from '@mui/material';
 import { styled } from '@mui/system';
+import axios from 'axios';
 
 const SignupPageContainer = styled(Box)({
   display: 'flex',
@@ -38,21 +39,60 @@ const SignupButton = styled(Button)({
 });
 
 const SignupPage = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+  });
+
+  const handleChange = (event) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [event.target.name]: event.target.value,
+    }));
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    // handle form submission
+
+    axios
+      .post('/signup', formData)
+      .then((response) => {
+        console.log(response.data); // handle successful response
+      })
+      .catch((error) => {
+        console.error(error); // handle error
+      });
   };
 
   return (
     <SignupPageContainer>
       <SignupFormContainer>
         <Title>Sign up</Title>
-        <TextField label="Name" variant="outlined" required />
-        <TextField label="Email" variant="outlined" type="email" required />
+        <TextField
+          label="Name"
+          variant="outlined"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          required
+        />
+        <TextField
+          label="Email"
+          variant="outlined"
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+        />
         <TextField
           label="Password"
           variant="outlined"
           type="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
           required
         />
         <SignupButton variant="contained" onClick={handleSubmit}>
