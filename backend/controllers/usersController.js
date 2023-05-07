@@ -47,22 +47,14 @@ async function login(req, res) {
     });
 
     // send it
-    res.sendStatus(200);
+    res.json({token})
   } catch (err) {
     console.log(err);
     res.sendStatus(400);
   }
 }
 
-function logout(req, res) {
-  try {
-    res.cookie("Authorization", "", { expires: new Date() });
-    res.sendStatus(200);
-  } catch (err) {
-    console.log(err);
-    res.sendStatus(400);
-  }
-}
+
 
 function checkAuth(req, res) {
   try {
@@ -74,5 +66,6 @@ function checkAuth(req, res) {
 
 module.exports = {
   signup,
- 
+  login,
+  checkAuth,
 };

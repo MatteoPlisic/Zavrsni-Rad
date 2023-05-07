@@ -6,6 +6,7 @@ import SignupPage from "../pages/SignupPage";
 import FrontPage from "../pages/FrontPage";
 import Navbar from "./Navbar";
 
+axios.defaults.baseURL = 'http://localhost:3000/'
 function App() {
   return (
     <div className="App">

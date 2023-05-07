@@ -1,27 +1,39 @@
-if(process.env.NODE_ENV != 'production'){
+// Load env variables
+if (process.env.NODE_ENV != "production") {
     require("dotenv").config();
-    }
-    //Dependencies
-const express = require("express");
-const cors = require("cors");
-const cookieParser = require("cookie-parser");
-const connectToDb = require("./config/connectToDb");
+  }
+  
+  // Import dependencies
+  const express = require("express");
+  const cors = require("cors");
+  const cookieParser = require("cookie-parser");
+  const connectToDb = require("./config/connectToDb");
 
-const usersController = require('./controllers/usersController');
-//const requireAuth = require("./middleware/requireAuth");
-    //Create express appp
-    const app = express();
-    //app.use(cookieParser());
-    app.use(express.json());
-    
-    connectToDb()
-    
-    //Routing
-    app.get('/',(req,res) =>{
-         
+  const usersController = require("./controllers/usersController");
+  const requireAuth = require("./middleware/requireAuth");
+  
+  // Create an express app
+  const app = express();
+  
+  // Configure express app
+  app.use(express.json());
+  app.use(cookieParser());
+  app.use(
+    cors({
+      origin: true,
+      credentials: true,
     })
-    app.post("/signup", usersController.signup);
+  );
+  
+  // Connect to database
+  connectToDb();
+  
+  // Routing
+  app.post("/signup", usersController.signup);
+  app.post("/login", usersController.login);
+  
+  app.get("/check-auth", requireAuth, usersController.checkAuth);
 
-    
-    //Routing
-    app.listen(process.env.PORT);
+  
+  // Start our server
+  app.listen(process.env.PORT);

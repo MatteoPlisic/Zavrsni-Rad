@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 import { Box, Button, TextField, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 
@@ -37,18 +39,52 @@ const LoginButton = styled(Button)({
 });
 
 const LoginPage = () => {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // handle form submission
-  };
+ 
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post('/login', { email, password });
+      const token = res.data.token;
+      const cookieOptions = {
+        expires: 30, 
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+      };
+      Cookies.set('Authorization', token, cookieOptions);
+      console.log(token);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+  
+  
+  
 
   return (
     <LoginPageContainer>
       <LoginFormContainer>
         <Title>Login</Title>
-        <TextField label="Email" variant="outlined" required />
-        <TextField label="Password" variant="outlined" type="password" required />
-        <LoginButton variant="contained" onClick={handleSubmit}>
+        <TextField
+          label="Email"
+          variant="outlined"
+          required
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+        />
+        <TextField
+          label="Password"
+          variant="outlined"
+          type="password"
+          required
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+        />
+        <LoginButton variant="contained" onClick={handleLogin}>
           Login
         </LoginButton>
         <Typography variant="body2" align="center">
