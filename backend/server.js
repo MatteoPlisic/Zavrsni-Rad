@@ -31,7 +31,7 @@ if (process.env.NODE_ENV != "production") {
   // Routing
   app.post("/signup", usersController.signup);
   app.post("/login", usersController.login);
-  
+  app.get("/logout", usersController.logout);
   app.get("/check-auth", requireAuth);
 
   

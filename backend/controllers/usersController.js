@@ -54,11 +54,28 @@ async function login(req, res) {
   }
 }
 
+function logout(req, res) {
+  try {
+    res.cookie("Authorization", "", { expires: new Date() });
+    res.sendStatus(200);
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(400);
+  }
+}
 
+function checkAuth(req, res) {
+  try {
+    res.sendStatus(200);
+  } catch (err) {
+    return res.sendStatus(400);
+  }
+}
 
 
 
 module.exports = {
   signup,
   login,
+  logout,
 };

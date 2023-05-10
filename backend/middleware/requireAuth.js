@@ -7,7 +7,7 @@ async function requireAuth(req, res, next) {
   try {
     // Read token off cookies
     const token = req.cookies.Authorization;
-    console.log(token + "   ASD");
+   // console.log(token + "   ASD");
     // Decode the token
     if(token === undefined){
       return res.sendStatus(401);
@@ -15,7 +15,7 @@ async function requireAuth(req, res, next) {
     else{
     const decoded = jwt.verify(token, process.env.SECRET);
     
-    console.log(token)
+    //console.log(token)
     // Check expiration
     if (Date.now() > decoded.exp) return res.sendStatus(401);
     
@@ -25,7 +25,7 @@ async function requireAuth(req, res, next) {
 
     // attach user to req
     req.user = user;
-    console.log("tu sam")
+   
     // continue on
     return res.sendStatus(200);
     }
