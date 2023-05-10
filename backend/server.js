@@ -32,7 +32,7 @@ if (process.env.NODE_ENV != "production") {
   app.post("/signup", usersController.signup);
   app.post("/login", usersController.login);
   
-  app.get("/check-auth", requireAuth, usersController.checkAuth);
+  app.get("/check-auth", requireAuth);
 
   
   // Start our server

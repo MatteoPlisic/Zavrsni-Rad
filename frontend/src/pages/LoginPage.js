@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { Box, Button, TextField, Typography } from '@mui/material';
@@ -40,26 +40,31 @@ const LoginButton = styled(Button)({
 
 const LoginPage = () => {
  
-
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('/login', { email, password });
+      const res = await axios.post('/login', { email, password },{withCredentials:true});
       const token = res.data.token;
       const cookieOptions = {
         expires: 30, 
         httpOnly: true,
-        sameSite: "lax",
+        sameSite: "none",
         secure: process.env.NODE_ENV === "production",
       };
-      Cookies.set('Authorization', token, cookieOptions);
+
+      Cookies.set('Authorization', token, );
       console.log(token);
+
+     navigate('/')
+     // 
     } catch (err) {
       console.error(err);
     }
+   
   }
   
   

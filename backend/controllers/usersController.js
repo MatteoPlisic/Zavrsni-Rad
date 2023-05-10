@@ -5,13 +5,13 @@ const User = require("../models/user");
 async function signup(req, res) {
   try {
     // Get the email and password off req body
-    const { email, password } = req.body;
-
+    const {name, email, password } = req.body;
+    console.log(req.body);
     // Hash password
     const hashedPassword = bcrypt.hashSync(password, 8);
 
     // Create a user with the daTa
-    await User.create({ email, password: hashedPassword });
+    await User.create({ name,email, password: hashedPassword });
 
     // respond
     res.sendStatus(200);
@@ -36,7 +36,7 @@ async function login(req, res) {
 
     // create a jwt token
     const exp = Date.now() + 1000 * 60 * 60 * 24 * 30;
-    const token = jwt.sign({ sub: user._id, exp }, process.env.SECRET);
+    const token = jwt.sign({ sub: user._id, exp,name: user.name }, process.env.SECRET,);
 
     // Set the cookie
     res.cookie("Authorization", token, {
@@ -56,16 +56,9 @@ async function login(req, res) {
 
 
 
-function checkAuth(req, res) {
-  try {
-    res.sendStatus(200);
-  } catch (err) {
-    return res.sendStatus(400);
-  }
-}
+
 
 module.exports = {
   signup,
   login,
-  checkAuth,
 };
