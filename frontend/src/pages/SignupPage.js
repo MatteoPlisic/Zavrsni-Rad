@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { Box, Button, TextField, Typography } from '@mui/material';
 import { styled } from '@mui/system';
@@ -39,6 +39,19 @@ const SignupButton = styled(Button)({
 });
 
 const SignupPage = () => {
+  const navigate = useNavigate();
+  useEffect( () => {
+    async function checker(){
+    const res = await axios.get('/check-auth',{withCredentials:true})
+    
+    if(res.status === 200)
+    navigate('/')
+    }
+
+    checker()
+  },[]);
+
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',

@@ -7,6 +7,7 @@ async function requireAuth(req, res, next) {
   try {
     // Read token off cookies
     const token = req.cookies.Authorization;
+    console.log(token);
    // console.log(token + "   ASD");
     // Decode the token
     if(token === undefined){

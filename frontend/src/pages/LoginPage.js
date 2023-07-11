@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
@@ -38,29 +38,30 @@ const LoginButton = styled(Button)({
   },
 });
 
-const LoginPage = ({ setIsLoggedIn }) => {
+const LoginPage = ({ setIsLoggedIn, isLoggedIn }) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const refresh = useState('')
+  useEffect( () => {
+    async function checker(){
+    const res = await axios.get('/check-auth',{withCredentials:true})
+    
+    if(res.status === 200)
+    navigate('/')
+    }
+
+    checker()
+  },[]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('/login', { email, password }, { withCredentials: true });
-      const token = res.data.token;
-      const cookieOptions = {
-        expires: 30,
-        httpOnly: true,
-        sameSite: 'none',
-        secure: process.env.NODE_ENV === 'production',
-      };
-
-      Cookies.set('Authorization', token, cookieOptions);
-      console.log(token);
-
+      await axios.post('/login', { email, password }, { withCredentials: true });
       setIsLoggedIn(true); // Set isLoggedIn to true in the parent component (e.g., Navbar component)
-
       navigate('/');
+       window.location.reload();
+      
     } catch (err) {
       console.error(err);
     }

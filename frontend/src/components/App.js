@@ -6,6 +6,7 @@ import SignupPage from "../pages/SignupPage";
 import FrontPage from "../pages/FrontPage";
 import Navbar from "./Navbar";
 import CheckAuth from "./CheckAuth";
+import AllTournamentsPage from "../pages/Tournaments/AllTournamentsPage";
 
 axios.defaults.baseURL = 'http://localhost:3000/';
 
@@ -16,11 +17,12 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Navbar isLoggedIn={isLoggedIn} />
-       
+        
         <Routes>
           <Route path="/" element={<FrontPage />} />
-          <Route path="/login" element={<LoginPage setIsLoggedIn={setIsLoggedIn} />} />
+          <Route path="/login" element={<LoginPage setIsLoggedIn={setIsLoggedIn} isLoggedIn = {isLoggedIn} />} />
           <Route path="/signup" element={<SignupPage />} />
+          
         </Routes>
       </BrowserRouter>
     </div>

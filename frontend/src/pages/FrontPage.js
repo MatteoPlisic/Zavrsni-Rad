@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import CheckAuth from '../components/CheckAuth';
+
+
 const FrontPageContainer = styled(Box)({
   display: 'flex',
   flexDirection: 'column',
@@ -37,39 +39,28 @@ const CtaButton = styled(Button)({
 const FrontPage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   
-  useEffect(() => {
-   
-    const checkAuth = async () => {
-      //console.log(Cookies.get('Authorization'))
-      try {
-        const response = await axios.get('/check-auth', {
-          withCredentials: true,
-          headers: {
-            Cookie: `Authorization=${Cookies.get('Authorization')}`
-          }
-        });
-        console.log(response)
-        setIsLoggedIn(true);
-      } catch (error) {
-        
-        console.error('Error checking auth:', error);
-      }
-    };
-    checkAuth();
-  }, []);
+  
 
   return (
     
     <FrontPageContainer>
-      <Title>Mini Football Croatia</Title>
-      <Subtitle>Find the latest results of Croatian mini football leagues and tournaments
-      {isLoggedIn === true  && 'You are logged in.'}
-      </Subtitle>
-      <CtaButton variant="contained" component={Link} to="/tournaments">
-        View Tournaments
-      </CtaButton>
-      
-    </FrontPageContainer>
+  <Title>Mini Football Croatia</Title>
+  <Subtitle>
+    Find the latest results of Croatian mini football leagues and tournaments{' '}
+    {isLoggedIn === true && 'You are logged in.'}
+  </Subtitle>
+
+  <div style={{ display: 'flex', gap: '10px' }}>
+    <Button variant="contained" component={Link} to="/tournaments">
+      View Tournaments
+    </Button>
+    <CheckAuth>
+      <Button variant="contained" color = "success" component={Link} to="/my-tournaments">
+        My Tournaments
+      </Button>
+    </CheckAuth>
+  </div>
+</FrontPageContainer>
   );
 };
 

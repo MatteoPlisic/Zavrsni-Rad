@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { useNavigate } from 'react-router-dom';
 
-const CheckAuth = ({ children }) => {
+const CheckNonAuth = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const navigate = useNavigate();
     useEffect(() => {
       async function checkAuthentication () {
         try {
@@ -26,12 +24,10 @@ const CheckAuth = ({ children }) => {
       checkAuthentication();
     },[]);
   
-    if(isLoggedIn)
+    if(isLoggedIn === false)
     return children;
-    
-    
     
     
   };
   
-  export default CheckAuth;
+  export default CheckNonAuth;
