@@ -1,23 +1,26 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import axios from "axios";
-import {BrowserRouter,Link,Route,Routes} from "react-router-dom"
 import LoginPage from "../pages/LoginPage";
 import SignupPage from "../pages/SignupPage";
 import FrontPage from "../pages/FrontPage";
 import Navbar from "./Navbar";
+import CheckAuth from "./CheckAuth";
 
-axios.defaults.baseURL = 'http://localhost:3000/'
+axios.defaults.baseURL = 'http://localhost:3000/';
+
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   return (
     <div className="App">
       <BrowserRouter>
-      <Navbar/>
+        <Navbar isLoggedIn={isLoggedIn} />
+       
         <Routes>
-          
-          <Route index element={<FrontPage/>} />
-          <Route path="/" element={<FrontPage/>}/>
-          <Route path="/login" element={<LoginPage/>}/>
-          <Route path="/signup" element={<SignupPage/>}/>
+          <Route path="/" element={<FrontPage />} />
+          <Route path="/login" element={<LoginPage setIsLoggedIn={setIsLoggedIn} />} />
+          <Route path="/signup" element={<SignupPage />} />
         </Routes>
       </BrowserRouter>
     </div>

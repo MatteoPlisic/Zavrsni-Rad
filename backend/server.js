@@ -10,6 +10,7 @@ if (process.env.NODE_ENV != "production") {
   const connectToDb = require("./config/connectToDb");
 
   const usersController = require("./controllers/usersController");
+  const tournamentsController = require("./controllers/tournamentsController");
   const requireAuth = require("./middleware/requireAuth");
   
   // Create an express app
@@ -33,7 +34,7 @@ if (process.env.NODE_ENV != "production") {
   app.post("/login", usersController.login);
   app.get("/logout", usersController.logout);
   app.get("/check-auth", requireAuth);
-
-  
+  app.post("/tournaments",tournamentsController.createTournament);
+  app.get("/tournaments",tournamentsController.getTournaments);
   // Start our server
   app.listen(process.env.PORT);

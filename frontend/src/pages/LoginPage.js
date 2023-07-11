@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { Box, Button, TextField, Typography } from '@mui/material';
@@ -38,8 +38,7 @@ const LoginButton = styled(Button)({
   },
 });
 
-const LoginPage = () => {
- 
+const LoginPage = ({ setIsLoggedIn }) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -47,28 +46,25 @@ const LoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('/login', { email, password },{withCredentials:true});
+      const res = await axios.post('/login', { email, password }, { withCredentials: true });
       const token = res.data.token;
       const cookieOptions = {
-        expires: 30, 
+        expires: 30,
         httpOnly: true,
-        sameSite: "none",
-        secure: process.env.NODE_ENV === "production",
+        sameSite: 'none',
+        secure: process.env.NODE_ENV === 'production',
       };
 
-      Cookies.set('Authorization', token, );
+      Cookies.set('Authorization', token, cookieOptions);
       console.log(token);
 
-     navigate('/')
-     // 
+      setIsLoggedIn(true); // Set isLoggedIn to true in the parent component (e.g., Navbar component)
+
+      navigate('/');
     } catch (err) {
       console.error(err);
     }
-   
-  }
-  
-  
-  
+  };
 
   return (
     <LoginPageContainer>

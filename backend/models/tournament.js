@@ -4,9 +4,6 @@ const tournamentSchema = new mongoose.Schema({
         type:String,
         required:true,
     },
-
-    
-    
   });
 
   const Tournament = mongoose.model('Tournament', tournamentSchema);

@@ -1,22 +1,19 @@
 import { AppBar, Button, Toolbar, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useGlobalState } from 'use-global-state-react';
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 
-
-
-
 const Navbar = () => {
-  
   const handleLogout = async (e) => {
     e.preventDefault();
+    console.log(isLoggedIn)
     try {
-      const res = await axios.get('/logout',{withCredentials:true});
+      const res = await axios.get('/logout', { withCredentials: true });
       const token = res.data.token;
       const cookieOptions = {
-        expires: 30, 
+        expires: 30,
         httpOnly: true,
         sameSite: "none",
         secure: process.env.NODE_ENV === "production",
@@ -24,22 +21,18 @@ const Navbar = () => {
 
       console.log(token);
       Cookies.remove('Authorization');
-
-      window.location.reload();
-     // 
+      setIsLoggedIn(false)
+     
+       
     } catch (err) {
       console.error(err);
     }
-   
-  }
-  
-  
+  };
+
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  
+
   useEffect(() => {
-   
     const checkAuth = async () => {
-      //console.log(Cookies.get('Authorization'))
       try {
         const response = await axios.get('/check-auth', {
           withCredentials: true,
@@ -47,17 +40,15 @@ const Navbar = () => {
             Cookie: `Authorization=${Cookies.get('Authorization')}`
           }
         });
-        console.log(response)
         setIsLoggedIn(true);
       } catch (error) {
-        
         console.error('Error checking auth:', error);
       }
     };
+
     checkAuth();
-  }, []);
-   
-    
+  });
+
 
   return (
     <AppBar position="static">
@@ -85,6 +76,6 @@ const Navbar = () => {
       </Toolbar>
     </AppBar>
   );
-}
+};
 
 export default Navbar;

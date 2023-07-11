@@ -4,6 +4,7 @@ import { styled } from '@mui/system';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import CheckAuth from '../components/CheckAuth';
 const FrontPageContainer = styled(Box)({
   display: 'flex',
   flexDirection: 'column',
@@ -58,14 +59,16 @@ const FrontPage = () => {
   }, []);
 
   return (
+    
     <FrontPageContainer>
       <Title>Mini Football Croatia</Title>
       <Subtitle>Find the latest results of Croatian mini football leagues and tournaments
       {isLoggedIn === true  && 'You are logged in.'}
       </Subtitle>
-      <CtaButton variant="contained" component={Link} to="/leagues">
-        View Leagues
+      <CtaButton variant="contained" component={Link} to="/tournaments">
+        View Tournaments
       </CtaButton>
+      
     </FrontPageContainer>
   );
 };
