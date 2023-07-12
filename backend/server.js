@@ -36,5 +36,6 @@ if (process.env.NODE_ENV != "production") {
   app.get("/check-auth", requireAuth);
   app.post("/tournaments",tournamentsController.createTournament);
   app.get("/tournaments",tournamentsController.getTournaments);
+  app.get("/my-tournaments",tournamentsController.getTournamentsFromUser)
   // Start our server
   app.listen(process.env.PORT);
