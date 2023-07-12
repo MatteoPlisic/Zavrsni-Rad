@@ -22,7 +22,7 @@ function App() {
           <Route path="/" element={<FrontPage />} />
           <Route path="/login" element={<LoginPage setIsLoggedIn={setIsLoggedIn} isLoggedIn = {isLoggedIn} />} />
           <Route path="/signup" element={<SignupPage />} />
-          
+          <Route path="/tournaments" element={<AllTournamentsPage />} />
         </Routes>
       </BrowserRouter>
     </div>
