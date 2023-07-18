@@ -57,7 +57,8 @@ const LoginPage = ({ setIsLoggedIn, isLoggedIn }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('/login', { email, password }, { withCredentials: true });
+      const res  = await axios.post('/login', { email, password }, { withCredentials: true });
+      console.log(res.cookie)
       setIsLoggedIn(true); // Set isLoggedIn to true in the parent component (e.g., Navbar component)
       navigate('/');
        window.location.reload();

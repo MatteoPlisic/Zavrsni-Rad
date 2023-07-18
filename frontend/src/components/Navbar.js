@@ -33,11 +33,8 @@ const Navbar = () => {
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
- 
-
-
   return (
-    <AppBar position="static">
+    <AppBar position="fixed">
       <Toolbar>
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
           Mini football

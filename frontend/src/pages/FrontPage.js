@@ -27,19 +27,8 @@ const Subtitle = styled(Typography)({
   textAlign: 'center',
 });
 
-const CtaButton = styled(Button)({
-  marginTop: '24px',
-  backgroundColor: '#3f51b5',
-  color: '#fff',
-  '&:hover': {
-    backgroundColor: '#2d3ebf',
-  },
-});
-
 const FrontPage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  
-  
 
   return (
     
@@ -57,6 +46,9 @@ const FrontPage = () => {
     <CheckAuth>
       <Button variant="contained" color = "success" component={Link} to="/my-tournaments">
         My Tournaments
+      </Button>
+      <Button variant="contained" color = "secondary" component={Link} to="/create-tournament">
+        Create tournament
       </Button>
     </CheckAuth>
   </div>

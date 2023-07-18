@@ -18,7 +18,7 @@ const AllTournamentsPage = () => {
   }, []);
 
   return (
-    <Container style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }} >
+    <Container style={{ display: 'flex', justifyContent: 'center', alignItems: 'center',marginTop: '100px' }} >
       <TableContainer component={Paper} style={{ maxWidth: '800px' }}>
         <Table>
           <TableHead>
