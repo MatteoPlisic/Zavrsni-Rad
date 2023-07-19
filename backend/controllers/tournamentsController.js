@@ -30,12 +30,12 @@ async function getTournamentsFromUser(req, res){
 
 async function createTournament(req, res) {
   try {
-    console.log(req.cookies)
+//console.log(req.cookies)
     const token = req.cookies.Authorization;
     const decoded = jwt.verify(token, process.env.SECRET);
-    console.log(decoded);
+   // console.log(decoded);
     const {name,date,location} = req.body;
-    console.log(date);
+   // console.log(date);
     
     // Check if a tournament with the same name already exists
     const existingTournament = await Tournament.findOne({ name });
@@ -52,8 +52,37 @@ async function createTournament(req, res) {
   }
 }
 
+async function deleteTournament(req, res) {
+  try {
+//console.log(req.cookies)
+    const token = req.cookies.Authorization;
+    const decoded = jwt.verify(token, process.env.SECRET);
+    //console.log(decoded);
+    
+    const {tournament_id} = req.body;
+    const tournament = await Tournament.findOne(tournament_id);
+    console.log(tournament.user.toString())
+    console.log(decoded.sub)
+    if(tournament.user.toString() === decoded.sub){
+      
+    await Tournament.deleteOne({ tournament_id});
+    res.sendStatus(200);
+      
+    }
+   // console.log(date);
+    else{
+      res.sendStatus(401)
+    }
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+}
+
+
 module.exports = {
   createTournament,
   getTournaments,
-  getTournamentsFromUser
+  getTournamentsFromUser,
+  deleteTournament
 };

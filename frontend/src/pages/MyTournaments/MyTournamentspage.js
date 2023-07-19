@@ -25,6 +25,7 @@ const MyTournamentspage = () => {
             <TableCell>Location</TableCell>
             <TableCell>Date</TableCell>
             <TableCell>Details</TableCell>
+            <TableCell></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -37,6 +38,14 @@ const MyTournamentspage = () => {
                 <Button component={Link} to={`/edit-event/${tournament._id}`}>
                   Edit 
                 </Button>
+              </TableCell>
+              <TableCell>
+                <Button onClick={async function DeleteEvent(){
+                  await axios.delete('/my-tournaments',{ params: { tournament_id: tournament._id },withCredentials:true })
+                }}>
+                  Delete
+                </Button>
+
               </TableCell>
             </TableRow>
           ))}

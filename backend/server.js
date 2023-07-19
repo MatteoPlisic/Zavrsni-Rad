@@ -37,5 +37,6 @@ if (process.env.NODE_ENV != "production") {
   app.post("/tournaments",tournamentsController.createTournament);
   app.get("/tournaments",tournamentsController.getTournaments);
   app.get("/my-tournaments",tournamentsController.getTournamentsFromUser)
+  app.delete("/my-tournaments",tournamentsController.deleteTournament)
   // Start our server
   app.listen(process.env.PORT);
