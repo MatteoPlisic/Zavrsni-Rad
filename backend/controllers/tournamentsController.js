@@ -34,8 +34,9 @@ async function createTournament(req, res) {
     const token = req.cookies.Authorization;
     const decoded = jwt.verify(token, process.env.SECRET);
     // console.log(decoded);
-    const { name, date, location, format } = req.body;
-    // console.log(date);
+    const { name, date, location, format,selectedTeams } = req.body;
+    
+     console.log(req.body);
 
     // Check if a tournament with the same name already exists
     const existingTournament = await Tournament.findOne({ name });
@@ -43,7 +44,7 @@ async function createTournament(req, res) {
       return res.status(400).json({ error: 'Tournament name must be unique' });
     }
 
-    const resp = await Tournament.create({ name, date, location, format, user: decoded.sub, });
+    const resp = await Tournament.create({ name, date, location, format, user: decoded.sub,teams:selectedTeams });
     //console.log(resp);
     res.sendStatus(200);
   } catch (error) {

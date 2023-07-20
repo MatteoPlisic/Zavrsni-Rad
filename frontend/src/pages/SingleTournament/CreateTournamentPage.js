@@ -1,7 +1,7 @@
 import { Button, Checkbox, Container, FormControl, FormLabel, MenuItem, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import Cookies from 'js-cookie';
+
 
 const CreateTournamentPage = () => {
   const [date, setDate] = useState('');
