@@ -10,6 +10,7 @@ import AllTournamentsPage from '../pages/AllTournaments/AllTournamentsPage';
 
 import MyTournamentspage from '../pages/MyTournaments/MyTournamentspage';
 import CreateTournamentPage from '../pages/SingleTournament/CreateTournamentPage';
+import EditTournamentPage from '../pages/SingleTournament/EditTournamentPage';
 
 axios.defaults.baseURL = 'http://localhost:3000/';
 
@@ -31,6 +32,7 @@ function App() {
           <Route path="/tournaments" element={<AllTournamentsPage />} />
           <Route path="/my-tournaments" element={<MyTournamentspage />} />
           <Route path="/create-tournament" element={<CreateTournamentPage />} />
+          <Route path="/edit-tournament/:id" element={<EditTournamentPage />} />
         </Routes>
       </BrowserRouter>
     </div>

@@ -35,7 +35,7 @@ const MyTournamentspage = () => {
               <TableCell>{tournament.location}</TableCell>
               <TableCell>{tournament.date}</TableCell>
               <TableCell>
-                <Button component={Link} to={`/edit-event/${tournament._id}`}>
+                <Button component={Link} to={`/edit-tournament/${tournament._id}`}>
                   Edit 
                 </Button>
               </TableCell>

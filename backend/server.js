@@ -35,8 +35,10 @@ if (process.env.NODE_ENV != "production") {
   app.post("/login", usersController.login);
   app.get("/logout", usersController.logout);
   app.get("/check-auth", requireAuth);
+  app.get("/tournaments/:id",tournamentsController.getTournamentById)
   app.post("/tournaments",tournamentsController.createTournament);
   app.get("/tournaments",tournamentsController.getTournaments);
+  app.put("/tournaments/:id",tournamentsController.updateTournament)
   app.get("/my-tournaments",tournamentsController.getTournamentsFromUser)
   app.delete("/my-tournaments",tournamentsController.deleteTournament)
   app.get("/teams",teamsController.getTeams)
