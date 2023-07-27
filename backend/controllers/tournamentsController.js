@@ -2,7 +2,7 @@
 const Tournament = require("../models/tournament");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
-
+const Team = require("../models/team")
 async function getTournaments(req, res) {
   try {
     console.log("zasto sam tu")
@@ -104,7 +104,7 @@ async function updateTournament(req, res) {
 
     // Get the tournament ID from the request parameters
     const tournamentId = req.params.id;
-
+    
     // Check if the user is authorized to update the tournament
     const tournament = await Tournament.findOne({ _id: tournamentId });
     if (!tournament) {
@@ -117,8 +117,9 @@ async function updateTournament(req, res) {
     }
 
     // Extract the updated tournament data from the request body
-    const { name, date, location, format } = req.body;
-
+    const { name, date, location, format,selectedTeams } = req.body;
+    const teams = new Team([selectedTeams]);
+    console.log(teams )
     // Check if a tournament with the updated name already exists
     const existingTournament = await Tournament.findOne({ name });
     if (existingTournament && existingTournament._id.toString() !== tournamentId) {
@@ -130,7 +131,7 @@ async function updateTournament(req, res) {
     tournament.date = date;
     tournament.location = location;
     tournament.format = format;
-
+    tournament.teams = selectedTeams
     // Save the updated tournament
     await tournament.save();
 

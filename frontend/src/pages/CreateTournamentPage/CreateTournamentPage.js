@@ -40,7 +40,7 @@ const CreateTournamentPage = () => {
   async function handleSubmit() {
     try {
       const currentDate = new Date();
-      if (teams.length.toString() !== format.toString()) {
+      if (selectedTeams.length.toString() !== format.toString()) {
         console.log(teams.length)
         setValidationMessage('You need to pick the same number of teams as the format you chose');
         setSuccessMessage('')
@@ -53,7 +53,7 @@ const CreateTournamentPage = () => {
         const response = await axios.post('/tournaments', { name, date, location, format, selectedTeams }, { withCredentials: true });
         if (response.status === 200) {
           setSuccessMessage('Tournament created successfully!');
-    
+          setValidationMessage('')
           setName('');
           setDate('');
           setLocation('');

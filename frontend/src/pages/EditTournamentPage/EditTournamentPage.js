@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Button, Container, FormControl, MenuItem, Select, TextField } from '@mui/material';
+import { Button, Container, FormControl, MenuItem, Select,  } from '@mui/material';
+import { Checkbox, FormLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
+
 
 const EditTournamentPage = () => {
   const { id } = useParams(); // Get the tournament ID from the URL
@@ -14,11 +16,24 @@ const EditTournamentPage = () => {
   const [selectedTeams,setSelectedTeams] = useState([])
   const [teams, setTeams] = useState([])
 
+  const handleCheckboxChange = (teamId) => {
+    if (selectedTeams.includes(teamId)) {
+      // If the team ID exists in the selectedTeams array, remove it
+      setSelectedTeams(selectedTeams.filter((id) => id !== teamId));
+    } else {
+      // If the team ID does not exist in the selectedTeams array, add it
+      setSelectedTeams([...selectedTeams, teamId]);
+    }
+  };
+
   useEffect(() => {
     const fetchTournament = async () => {
       try {
         
         const tournament = await axios.get(`/tournaments/${id}`, { withCredentials: true });
+        const Allteams = await axios.get("/teams", { withCredentials: true });
+        setTeams(Allteams.data)
+        console.log(teams)
         const getteams = tournament.data.teams
         console.log(tournament)
         setName(tournament.data.name)
@@ -26,6 +41,7 @@ const EditTournamentPage = () => {
         setLocation(tournament.data.location)
         setFormat(tournament.data.format.toString())
         setSelectedTeams(getteams);
+        console.log(selectedTeams)
       } catch (error) {
         console.error('Error fetching tournament:', error);
       }
@@ -126,6 +142,33 @@ const EditTournamentPage = () => {
         {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
         {validationMessage && <p style={{ color: 'red' }}>{validationMessage}</p>}
       </form>
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Name</TableCell>
+              <TableCell>Selected</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {teams.map((team) => (
+              <TableRow key={team._id}>
+                <TableCell>{team.name}</TableCell>
+                <TableCell>
+                <Checkbox
+                // Check if the team is in the selectedTeams array
+                checked={selectedTeams.includes(team._id)}
+                // Handle checkbox state change
+                onChange={() => handleCheckboxChange(team._id)}
+              />
+                </TableCell>
+                
+              </TableRow>
+            ))}
+          </TableBody>
+
+        </Table>
+      </TableContainer>
     </Container>
   );
 };

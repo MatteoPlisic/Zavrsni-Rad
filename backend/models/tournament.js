@@ -27,6 +27,11 @@ const tournamentSchema = new mongoose.Schema({
     type: [mongoose.Schema.Types.ObjectId],
     ref: 'Team',
     required:true,
+  },
+  isDone: {
+    type:Boolean,
+    required:true,
+    default:false
   }
 });
 

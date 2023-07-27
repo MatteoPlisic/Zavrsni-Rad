@@ -9,8 +9,8 @@ import Navbar from './Navbar';
 import AllTournamentsPage from '../pages/AllTournaments/AllTournamentsPage';
 
 import MyTournamentspage from '../pages/MyTournaments/MyTournamentspage';
-import CreateTournamentPage from '../pages/SingleTournament/CreateTournamentPage';
-import EditTournamentPage from '../pages/SingleTournament/EditTournamentPage';
+import CreateTournamentPage from '../pages/CreateTournamentPage/CreateTournamentPage';
+import EditTournamentPage from '../pages/EditTournamentPage/EditTournamentPage';
 
 axios.defaults.baseURL = 'http://localhost:3000/';
 
