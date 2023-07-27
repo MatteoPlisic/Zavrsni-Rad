@@ -1,7 +1,13 @@
 const mongoose = require("mongoose")
 const teamSchema = new mongoose.Schema({
-    name:{
-        type:String,
+    team1:{
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'Team',
+        required:true,
+    },
+    team1:{
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'Team',
         required:true,
     },
     
