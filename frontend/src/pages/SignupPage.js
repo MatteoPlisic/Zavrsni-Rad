@@ -67,6 +67,7 @@ const SignupPage = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    console.log(formData)
 
     axios
       .post('/signup', formData)
@@ -76,6 +77,8 @@ const SignupPage = () => {
       .catch((error) => {
         console.error(error); // handle error
       });
+
+      navigate('/')
   };
 
   return (

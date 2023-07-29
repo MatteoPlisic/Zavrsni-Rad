@@ -44,6 +44,7 @@ async function createTeam(req, res) {
         const token = req.cookies.Authorization;
         const decoded = jwt.verify(token, process.env.SECRET);
         const {name} = req.body;
+        console.log(name)
         await Team.create({name})
         res.sendStatus(200);
     } catch (error) {

@@ -6,7 +6,7 @@ async function signup(req, res) {
   try {
     // Get the email and password off req body
     const {name, email, password } = req.body;
-    console.log(req.body);
+    //console.log(req.body);
     // Hash password
     const hashedPassword = bcrypt.hashSync(password, 8);
 

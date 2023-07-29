@@ -3,9 +3,11 @@ const Tournament = require("../models/tournament");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const Team = require("../models/team")
+const Game = require("../models/game")
+
 async function getTournaments(req, res) {
   try {
-    console.log("zasto sam tu")
+    
     const tournaments = await Tournament.find();
     res.send(tournaments)
 
@@ -142,6 +144,85 @@ async function updateTournament(req, res) {
   }
 }
 
+async function simulateTournament(req, res) {
+  console.log(req.body.tournament_id);
+  const tournament_id = req.body.tournament_id;
+  const tournament = await Tournament.findById(tournament_id);
+  const teams = [];
+
+  if (!tournament) {
+    console.log("Tournament not found!");
+    return res.status(404).json({ error: "Tournament not found" });
+  }
+
+  const teamPromises = tournament.teams.map(async (team) => {
+    const teamData = await Team.findById(team);
+    return teamData;
+  });
+
+  try {
+    const teamsData = await Promise.all(teamPromises);
+    console.log(teamsData);
+
+    shuffleArray(teamsData)
+
+    // Now 'teamsData' will have all the team data retrieved from the database
+    //res.status(200).json({ teams: teamsData });
+  
+  let offset = 0;
+  while (teamsData.length > 1) {
+    let roundOf = 1;
+    //Determening which round is it
+    while (roundOf * 2 < teamsData.length) {
+    roundOf *= 2;
+  }
+  roundOf *= 2;
+    const team1 = teamsData.splice(offset, 1)[0]; // Access the first team directly
+    const team2 = teamsData.splice(offset, 1)[0]; // Access the second team directly
+  
+    const min = 0; // The minimum value for the random numbers
+    const max = 10; // The maximum value for the random numbers
+  
+    // Generate the first random number
+    let num1 = Math.floor(Math.random() * (max - min + 1)) + min;
+  
+    // Generate the second random number, ensuring it's different from the first one
+    let num2;
+    do {
+      num2 = Math.floor(Math.random() * (max - min + 1)) + min;
+    } while (num2 === num1);
+  
+    if (num1 > num2)
+      teamsData.splice(offset, 0, team1);
+    else
+      teamsData.splice(offset, 0, team2);
+  
+    const response = await Game.create({
+      team1: team1._id, // Access the _id of the first team object
+      team2: team2._id, // Access the _id of the second team object
+      roundOf,
+      team1Score: num1,
+      team2Score: num2,
+      tournament
+    });
+  }
+  tournament.isDone = true;
+  tournament.save();
+} catch (error) {
+  console.log("Error retrieving team data:", error);
+  res.status(500).json({ error: "Error retrieving team data" });
+}
+
+}
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+
 
 module.exports = {
   createTournament,
@@ -149,5 +230,6 @@ module.exports = {
   getTournamentsFromUser,
   deleteTournament,
   getTournamentById,
-  updateTournament
+  updateTournament,
+  simulateTournament
 };

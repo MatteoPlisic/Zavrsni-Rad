@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useFetcher } from 'react-router-dom';
 import { Button, Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { green, yellow } from '@mui/material/colors';
 
 const MyTournamentsPage = () => {
   const [tournaments, setTournaments] = useState([]);
-
+  const [refresh,setRefresh] = useState(false)
   useEffect(() => {
     const fetchTournaments = async () => {
       try {
@@ -18,7 +18,25 @@ const MyTournamentsPage = () => {
     };
 
     fetchTournaments();
-  }, []);
+  });
+
+  async function simulateTournament(tournament_id) {
+    try {
+      const resp = await axios.post('/tournaments/simulate', { tournament_id }, { withCredentials: true });
+      console.log(resp); // Check the response data
+
+      setTournaments((tournaments) =>
+        tournaments.map((tournament) =>
+          tournament._id === tournament_id ? { ...tournament, isDone: true } : tournament
+        )
+      );
+      setRefresh(!refresh)
+      // No need to log 'tournaments' here.
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  
 
   const handleDelete = async (tournamentId) => {
     try {
@@ -39,8 +57,10 @@ const MyTournamentsPage = () => {
               <TableCell>Location</TableCell>
               <TableCell>Date</TableCell>
               <TableCell>Details</TableCell>
-              <TableCell>Played</TableCell> 
               <TableCell></TableCell>
+              <TableCell>Played</TableCell>
+              <TableCell>Simulate</TableCell>
+
             </TableRow>
           </TableHead>
           <TableBody>
@@ -63,6 +83,9 @@ const MyTournamentsPage = () => {
                   {/* Display "Done" or "To Be Played" based on team.isDone */}
                   {tournament.isDone && <p style={{ color: 'green' }}> Done</p>}
                   {!tournament.isDone && <p style={{ color: 'orange' }}> To be Played</p>}
+                </TableCell>
+                <TableCell>
+                {!tournament.isDone && <Button color='warning' variant='contained' onClick={() => simulateTournament(tournament._id)}>Simulate Game</Button>}
                 </TableCell>
               </TableRow>
             ))}
