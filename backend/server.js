@@ -12,6 +12,7 @@ if (process.env.NODE_ENV != "production") {
   const usersController = require("./controllers/usersController");
   const tournamentsController = require("./controllers/tournamentsController");
   const teamsController = require("./controllers/teamsController");
+  const playersController = require("./controllers/playersController");
   const requireAuth = require("./middleware/requireAuth");
   
   // Create an express app
@@ -46,5 +47,7 @@ if (process.env.NODE_ENV != "production") {
   app.post("/teams",teamsController.createTeam)
   app.post("/tournaments/simulate",tournamentsController.simulateTournament)
   app.get("/tournament/details/:id",tournamentsController.getTournamentDetails)
+
+  app.post("/players",playersController.createPlayer)
   // Start our server
   app.listen(process.env.PORT);
