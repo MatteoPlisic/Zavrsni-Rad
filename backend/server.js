@@ -31,6 +31,7 @@ if (process.env.NODE_ENV != "production") {
   connectToDb();
   
   // Routing
+  app.get("/superUser",usersController.checkSuperUser)
   app.post("/signup", usersController.signup);
   app.post("/login", usersController.login);
   app.get("/logout", usersController.logout);
@@ -44,5 +45,6 @@ if (process.env.NODE_ENV != "production") {
   app.get("/teams",teamsController.getTeams)
   app.post("/teams",teamsController.createTeam)
   app.post("/tournaments/simulate",tournamentsController.simulateTournament)
+  app.get("/tournament/details/:id",tournamentsController.getTournamentDetails)
   // Start our server
   app.listen(process.env.PORT);

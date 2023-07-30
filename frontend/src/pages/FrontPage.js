@@ -1,13 +1,11 @@
-import React, {useState,useEffect} from 'react';
-import { Box, Button, Typography } from '@mui/material';
+import MenuIcon from '@mui/material/Menu';
+import { AppBar,Button, Toolbar, IconButton, List, ListItem, ListItemText, Drawer, Divider,Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
-import Cookies from 'js-cookie';
+import { useState } from 'react';
 import CheckAuth from '../components/CheckAuth';
 
-
-const FrontPageContainer = styled(Box)({
+const FrontPageContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
@@ -29,30 +27,23 @@ const Subtitle = styled(Typography)({
 
 const FrontPage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
 
   return (
-    
-    <FrontPageContainer>
-  <Title>Mini Football Croatia</Title>
-  <Subtitle>
-    Find the latest results of Croatian mini football leagues and tournaments{' '}
-    {isLoggedIn === true && 'You are logged in.'}
-  </Subtitle>
+    <>
+   
 
-  <div style={{ display: 'flex', gap: '10px' }}>
-    <Button variant="contained" component={Link} to="/tournaments">
-      View Tournaments
-    </Button>
-    <CheckAuth>
-      <Button variant="contained" color = "success" component={Link} to="/my-tournaments">
-        My Tournaments
-      </Button>
-      <Button variant="contained" color = "secondary" component={Link} to="/create-tournament">
-        Create tournament
-      </Button>
-    </CheckAuth>
-  </div>
-</FrontPageContainer>
+      <FrontPageContainer>
+        <Title>Mini Football Croatia</Title>
+        <Subtitle>
+          Find the latest results of Croatian mini football leagues and tournaments{' '}
+          {isLoggedIn === true && 'You are logged in.'}
+        </Subtitle>
+
+       
+      </FrontPageContainer>
+    </>
   );
 };
 

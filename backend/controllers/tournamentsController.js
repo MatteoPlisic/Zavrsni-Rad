@@ -38,7 +38,7 @@ async function getTournamentById(req,res){
     const id = req.params.id;
     console.log(id)
     const tournaments = await Tournament.findOne({_id:id });
-
+    
     res.send(tournaments)
 
   } catch (error) {
@@ -203,11 +203,12 @@ async function simulateTournament(req, res) {
       roundOf,
       team1Score: num1,
       team2Score: num2,
-      tournament
+      tournament:tournament._id
     });
   }
   tournament.isDone = true;
   tournament.save();
+  res.sendStatus(200)
 } catch (error) {
   console.log("Error retrieving team data:", error);
   res.status(500).json({ error: "Error retrieving team data" });
@@ -222,6 +223,27 @@ function shuffleArray(array) {
   }
 }
 
+async function getTournamentDetails(req,res){
+  const tournament_id = req.params.id;
+  console.log(tournament_id)
+  const tournament = await Tournament.findById(tournament_id)
+  //console.log(tournament)
+  
+
+  const teamPromises = tournament.teams.map(async (team) => {
+    const teams = await Team.findById(team);
+    return teams;
+  });
+
+  const games = await Game.find({tournament:tournament._id}) 
+
+    const teams = await Promise.all(teamPromises);
+    console.log(games);
+
+    res.send({tournament,teams,games})
+  
+
+}
 
 
 module.exports = {
@@ -231,5 +253,6 @@ module.exports = {
   deleteTournament,
   getTournamentById,
   updateTournament,
-  simulateTournament
+  simulateTournament,
+  getTournamentDetails
 };

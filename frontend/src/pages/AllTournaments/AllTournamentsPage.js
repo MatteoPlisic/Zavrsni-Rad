@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Divider, Container } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 const AllTournamentsPage = () => {
   const [tournaments, setTournaments] = useState([]);
@@ -36,7 +37,7 @@ const AllTournamentsPage = () => {
                 <TableCell>{tournament.name}</TableCell>
                 <TableCell>{tournament.location}</TableCell>
                 <TableCell>{tournament.date}</TableCell>
-                <TableCell><Button>See More</Button></TableCell>
+                <TableCell><Button component={Link} to={`/tournament-details/${tournament._id}`}>See More</Button></TableCell>
                 
               </TableRow>
             ))}

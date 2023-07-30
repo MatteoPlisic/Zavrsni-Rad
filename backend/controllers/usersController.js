@@ -5,13 +5,13 @@ const User = require("../models/user");
 async function signup(req, res) {
   try {
     // Get the email and password off req body
-    const {name, email, password } = req.body;
+    const { name, email, password, superUser } = req.body;
     //console.log(req.body);
     // Hash password
     const hashedPassword = bcrypt.hashSync(password, 8);
 
     // Create a user with the daTa
-    await User.create({ name,email, password: hashedPassword });
+    await User.create({ name, email, password: hashedPassword, superUser });
 
     // respond
     res.sendStatus(200);
@@ -36,7 +36,7 @@ async function login(req, res) {
 
     // create a jwt token
     const exp = Date.now() + 1000 * 60 * 60 * 24 * 30;
-    const token = jwt.sign({ sub: user._id, exp,name: user.name }, process.env.SECRET,);
+    const token = jwt.sign({ sub: user._id, exp, name: user.name, superUser: user.superUser }, process.env.SECRET,);
 
     // Set the cookie
     res.cookie("Authorization", token, {
@@ -47,11 +47,24 @@ async function login(req, res) {
     });
 
     // send it
-    res.json({token})
+    res.json({ token })
   } catch (err) {
     console.log(err);
     res.sendStatus(400);
   }
+}
+
+async function checkSuperUser(req, res) {
+  const token = req.cookies.Authorization;
+  const decoded = jwt.verify(token, process.env.SECRET);
+  console.log(decoded)
+  const user = await User.findById(decoded.sub)
+  console.log(user)
+  if (user.superUser)
+    res.sendStatus(200)
+  else
+    res.sendStatus(401)
+
 }
 
 function logout(req, res) {
@@ -75,7 +88,9 @@ function checkAuth(req, res) {
 
 
 module.exports = {
+  checkSuperUser,
   signup,
   login,
   logout,
+  checkAuth
 };
