@@ -44,10 +44,17 @@ if (process.env.NODE_ENV != "production") {
   app.get("/my-tournaments",tournamentsController.getTournamentsFromUser)
   app.delete("/my-tournaments",tournamentsController.deleteTournament)
   app.get("/teams",teamsController.getTeams)
+  app.get("/teams/:id",teamsController.getTeamById)
   app.post("/teams",teamsController.createTeam)
+  app.put("/teams",teamsController.updateTeam)
+  app.delete("/teams/:id",teamsController.deleteTeam)
   app.post("/tournaments/simulate",tournamentsController.simulateTournament)
   app.get("/tournament/details/:id",tournamentsController.getTournamentDetails)
 
+  app.get("/players",playersController.getAllPlayers)
   app.post("/players",playersController.createPlayer)
+  app.delete("/players/:id",playersController.deletePlayer)
+  app.get("/players/:id",playersController.getPlayerById)
+  app.put("/players/:id",playersController.updatePlayer)
   // Start our server
   app.listen(process.env.PORT);

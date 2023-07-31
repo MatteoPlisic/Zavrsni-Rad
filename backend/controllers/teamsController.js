@@ -14,7 +14,7 @@ async function getTeams(req, res) {
         
 
        const teams = await Team.find();
-       console.log(teams)
+       
        res.send(teams)
 
     } catch (error) {
@@ -28,9 +28,11 @@ async function getTeamById(req, res) {
     try {
         const token = req.cookies.Authorization;
         const decoded = jwt.verify(token, process.env.SECRET);
-        const {team_id} = req.body;
+        const {id} = req.params;
 
-        await Team.findOne({team_id})
+        const team =await Team.findById(id)
+        console.log(team)
+        res.send(team)
 
     } catch (error) {
 
@@ -61,20 +63,49 @@ async function deleteTeam(req, res) {
     try {
         const token = req.cookies.Authorization;
         const decoded = jwt.verify(token, process.env.SECRET);
-        const {team_id} = req.body;
-
-        await Team.deleteOne({team_id})
+        const {id} = req.params
+       
+        const team = await Team.findById(id);
+        if(!team){
+            return res.status(404).json({error:"Team not found"})
+        }
+        await team.deleteOne()
+        res.json({ message: 'Team deleted successfully' });
 
     } catch (error) {
-
+        console.error('Error deleting team:', error);
+        res.status(500).json({ error: 'Server error' });
     }
 
 }
 
 
 async function updateTeam(req, res) {
-
-}
+    const { id } = req.params;
+    const { name } = req.body;
+  
+    try {
+      // Find the team by ID
+      const team = await Team.findById(id);
+  
+      // If the team with the given ID is not found, return an error response
+      if (!team) {
+        return res.status(404).json({ message: 'Team not found' });
+      }
+  
+      // Update the team's name
+      team.name = name;
+  
+      // Save the updated team in the database
+      const updatedTeam = await team.save();
+  
+      // Return the updated team as the response
+      res.json(updatedTeam);
+    } catch (error) {
+      // If there's an error during the update process, return an error response
+      res.status(500).json({ message: 'Error updating team', error: error.message });
+    }
+  }
 
 
 module.exports = {

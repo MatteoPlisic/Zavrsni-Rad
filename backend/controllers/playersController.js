@@ -68,7 +68,7 @@ async function deletePlayer(req, res) {
     if (!player) {
       return res.status(404).json({ error: 'Player not found' });
     }
-    await player.remove();
+    await player.deleteOne();
     res.json({ message: 'Player deleted successfully' });
   } catch (error) {
     console.error('Error deleting player:', error);

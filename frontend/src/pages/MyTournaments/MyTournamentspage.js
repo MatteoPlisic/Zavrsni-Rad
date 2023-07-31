@@ -70,9 +70,12 @@ const MyTournamentsPage = () => {
                 <TableCell>{tournament.location}</TableCell>
                 <TableCell>{tournament.date}</TableCell>
                 <TableCell>
-                  <Button component={Link} to={`/edit-tournament/${tournament._id}`}>
+                 {!tournament.isDone && <Button component={Link} to={`/edit-tournament/${tournament._id}`}>
                     Edit
-                  </Button>
+                  </Button>}
+                  {tournament.isDone && <Button component={Link} to={`/tournament-details/${tournament._id}`}>
+                    See details
+                  </Button>}
                 </TableCell>
                 <TableCell>
                   <Button onClick={() => handleDelete(tournament._id)}>
@@ -85,7 +88,7 @@ const MyTournamentsPage = () => {
                   {!tournament.isDone && <p style={{ color: 'orange' }}> To be Played</p>}
                 </TableCell>
                 <TableCell>
-                {!tournament.isDone && <Button color='warning' variant='contained' onClick={() => simulateTournament(tournament._id)}>Simulate Game</Button>}
+                {!tournament.isDone && <Button color='warning' variant='contained' onClick={() => simulateTournament(tournament._id)}>Simulate</Button>}
                 </TableCell>
               </TableRow>
             ))}
