@@ -78,5 +78,9 @@ app.put('/groups/:id', groupsController.updateGroup);
 //schedule
 
 
+app.get("/schedule",schedulesController.getSchedules)
+app.post("/schedule",schedulesController.createSchedule)
+app.get("/schedule/:id",schedulesController.getScheduleById)
+
   // Start our server
   app.listen(process.env.PORT);

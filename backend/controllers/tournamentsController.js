@@ -72,7 +72,7 @@ async function createTournament(req, res) {
       teams: selectedTeams,
     });
 
-    console.log(tournament)
+    //console.log(tournament)
     // Create two groups of four teams each
     const group1 = new Group({ tournament: tournament, teams: [] });
     const group2 = new Group({ tournament: tournament, teams: [] });
@@ -97,9 +97,9 @@ async function createTournament(req, res) {
 
     // Create the tournament
 
-    await createSchedulelocal(tournament,group1,group2)
+    const schedule = await createSchedulelocal(tournament,group1,group2)
+    console.log(schedule)
    
-
     res.sendStatus(200);
   } catch (error) {
     console.log(error);
@@ -171,6 +171,7 @@ async function createSchedulelocal(tournament, group1, group2 ) {
 
     await schedule.save();
     
+    return schedule
   } catch (error) {
     console.error('Error creating schedule:', error);
     

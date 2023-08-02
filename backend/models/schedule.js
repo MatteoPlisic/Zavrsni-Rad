@@ -11,13 +11,13 @@ const scheduleSchema = new mongoose.Schema({
   group1: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Team", // Reference the Team model
+      ref: "Group", // Reference the Group model
     },
   ],
   group2: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Team", // Reference the Team model
+      ref: "Group", // Reference the Group model
     },
   ],
   group1Games: [
@@ -44,25 +44,25 @@ const scheduleSchema = new mongoose.Schema({
 
 // ...
 
-// Use 'populate' to get the actual team objects for group1
+// Use 'populate' to get the entire team objects for group1
 scheduleSchema.virtual("group1Info", {
   ref: "Group",
   localField: "group1",
-  foreignField: "teams",
+  foreignField: "_id",
   justOne: false,
   options: { populate: { path: "teams" } }, // Populate the 'teams' field of the 'Group' model
 });
 
-// Use 'populate' to get the actual team objects for group2
+// Use 'populate' to get the entire team objects for group2
 scheduleSchema.virtual("group2Info", {
   ref: "Group",
   localField: "group2",
-  foreignField: "teams",
+  foreignField: "_id",
   justOne: false,
   options: { populate: { path: "teams" } }, // Populate the 'teams' field of the 'Group' model
 });
 
-// Use 'populate' to get the actual game objects for group1 games
+// Use 'populate' to get the entire game objects for group1 games
 scheduleSchema.virtual("group1GamesInfo", {
   ref: "Game",
   localField: "group1Games",
@@ -71,7 +71,7 @@ scheduleSchema.virtual("group1GamesInfo", {
   options: { populate: { path: "team1 team2" } }, // Populate the 'team1' and 'team2' fields of the 'Game' model
 });
 
-// Use 'populate' to get the actual game objects for group2 games
+// Use 'populate' to get the entire game objects for group2 games
 scheduleSchema.virtual("group2GamesInfo", {
   ref: "Game",
   localField: "group2Games",
@@ -79,6 +79,7 @@ scheduleSchema.virtual("group2GamesInfo", {
   justOne: false,
   options: { populate: { path: "team1 team2" } }, // Populate the 'team1' and 'team2' fields of the 'Game' model
 });
+
 
 
 const Schedule = mongoose.model('Schedule', scheduleSchema);

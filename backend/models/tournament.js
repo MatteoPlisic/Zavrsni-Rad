@@ -8,11 +8,11 @@ const tournamentSchema = new mongoose.Schema({
     unique: true
   },
   date:{
-    type:Date,
-    require:true
+    type: Date,
+    required: true
   },
   location: {
-    type:String
+    type: String
   },
   format: {
     type: String,
@@ -26,13 +26,17 @@ const tournamentSchema = new mongoose.Schema({
   teams: {
     type: [mongoose.Schema.Types.ObjectId],
     ref: 'Team',
-    required:true,
+    required: true,
   },
   isDone: {
-    type:Boolean,
-    required:true,
-    default:false
-  }
+    type: Boolean,
+    required: true,
+    default: false
+  },
+  schedule: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Schedule',
+  },
 });
 
 const Tournament = mongoose.model('Tournament', tournamentSchema);
