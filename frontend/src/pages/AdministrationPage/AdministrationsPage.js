@@ -69,8 +69,9 @@ const AdministrationPage = () => {
 
   const handleCreateTeam = async () => {
     try {
-      await axios.post('/teams', { name: teamName });
-      setTeamName('');
+     const res=    await axios.post('/teams', { name: teamName });
+     console.log(res)
+     setTeamName('');
       fetchTeams(); // Refresh the team list after creating a new team
     } catch (error) {
       console.error('Error creating team:', error);

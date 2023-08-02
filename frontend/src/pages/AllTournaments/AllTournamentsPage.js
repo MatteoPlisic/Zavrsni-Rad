@@ -9,7 +9,8 @@ const AllTournamentsPage = () => {
   useEffect(() => {
     async function getTournaments() {
       try {
-        const res = await axios.get('/tournaments');
+        const res = await axios.get("/tournaments");
+        console.log(res)
         setTournaments(res.data);
       } catch (error) {
         console.log(error);

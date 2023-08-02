@@ -115,6 +115,7 @@ const CreateTournamentPage = () => {
           <MenuItem value="16">16 teams</MenuItem>
           <MenuItem value="32">32 teams</MenuItem>
           <MenuItem value="4">4 teams</MenuItem>
+          <MenuItem value="8">8 teams</MenuItem>
         </Select>
 
         {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}

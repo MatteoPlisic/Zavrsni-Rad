@@ -9,12 +9,14 @@ if (process.env.NODE_ENV != "production") {
   const cookieParser = require("cookie-parser");
   const connectToDb = require("./config/connectToDb");
 
+  //controllers
   const usersController = require("./controllers/usersController");
   const tournamentsController = require("./controllers/tournamentsController");
   const teamsController = require("./controllers/teamsController");
   const playersController = require("./controllers/playersController");
   const requireAuth = require("./middleware/requireAuth");
-  
+  const groupsController = require('./controllers/groupsController');
+  const schedulesController = require("./controllers/schedulesController")
   // Create an express app
   const app = express();
   
@@ -32,29 +34,49 @@ if (process.env.NODE_ENV != "production") {
   connectToDb();
   
   // Routing
+  //users
   app.get("/superUser",usersController.checkSuperUser)
   app.post("/signup", usersController.signup);
   app.post("/login", usersController.login);
   app.get("/logout", usersController.logout);
   app.get("/check-auth", requireAuth);
+
+  //tournaments
   app.get("/tournaments/:id",tournamentsController.getTournamentById)
   app.post("/tournaments",tournamentsController.createTournament);
   app.get("/tournaments",tournamentsController.getTournaments);
   app.put("/tournaments/:id",tournamentsController.updateTournament)
   app.get("/my-tournaments",tournamentsController.getTournamentsFromUser)
   app.delete("/my-tournaments",tournamentsController.deleteTournament)
+  app.post("/tournaments/simulate",tournamentsController.simulateTournament)
+  app.get("/tournament/details/:id",tournamentsController.getTournamentDetails)
+
+  //teams
   app.get("/teams",teamsController.getTeams)
   app.get("/teams/:id",teamsController.getTeamById)
   app.post("/teams",teamsController.createTeam)
   app.put("/teams",teamsController.updateTeam)
   app.delete("/teams/:id",teamsController.deleteTeam)
-  app.post("/tournaments/simulate",tournamentsController.simulateTournament)
-  app.get("/tournament/details/:id",tournamentsController.getTournamentDetails)
 
+
+  //players
   app.get("/players",playersController.getAllPlayers)
   app.post("/players",playersController.createPlayer)
   app.delete("/players/:id",playersController.deletePlayer)
   app.get("/players/:id",playersController.getPlayerById)
   app.put("/players/:id",playersController.updatePlayer)
+
+
+  //groups
+  
+app.get('/groups', groupsController.getAllGroups);
+app.post('/groups', groupsController.createGroup);
+app.delete('/groups/:id', groupsController.deleteGroup);
+app.get('/groups/:id', groupsController.getGroupById);
+app.put('/groups/:id', groupsController.updateGroup);
+
+//schedule
+
+
   // Start our server
   app.listen(process.env.PORT);

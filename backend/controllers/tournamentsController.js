@@ -4,11 +4,15 @@ const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const Team = require("../models/team")
 const Game = require("../models/game")
+const Group = require("../models/group");
+const Schedule = require("../models/schedule");
+const { createSchedule } = require("../controllers/schedulesController");
 
 async function getTournaments(req, res) {
   try {
     
     const tournaments = await Tournament.find();
+    console.log(tournaments)
     res.send(tournaments)
 
   } catch (error) {
@@ -49,13 +53,9 @@ async function getTournamentById(req,res){
 
 async function createTournament(req, res) {
   try {
-    //console.log(req.cookies)
     const token = req.cookies.Authorization;
     const decoded = jwt.verify(token, process.env.SECRET);
-    // console.log(decoded);
-    const { name, date, location, format,selectedTeams } = req.body;
-    
-     console.log(req.body);
+    const { name, date, location, format, selectedTeams } = req.body;
 
     // Check if a tournament with the same name already exists
     const existingTournament = await Tournament.findOne({ name });
@@ -63,8 +63,43 @@ async function createTournament(req, res) {
       return res.status(400).json({ error: 'Tournament name must be unique' });
     }
 
-    const resp = await Tournament.create({ name, date, location, format, user: decoded.sub,teams:selectedTeams });
-    //console.log(resp);
+    const tournament = await Tournament.create({
+      name,
+      date,
+      location,
+      format,
+      user: decoded.sub,
+      teams: selectedTeams,
+    });
+
+    console.log(tournament)
+    // Create two groups of four teams each
+    const group1 = new Group({ tournament: tournament, teams: [] });
+    const group2 = new Group({ tournament: tournament, teams: [] });
+
+    // Save the groups to the database
+    await group1.save();
+    await group2.save();
+
+    // Assign each team to one of the groups
+    const numTeams = selectedTeams.length;
+    for (let i = 0; i < numTeams; i++) {
+      if (i < numTeams / 2) {
+        group1.teams.push(selectedTeams[i]);
+      } else {
+        group2.teams.push(selectedTeams[i]);
+      }
+    }
+
+    // Save the groups with the assigned teams to the database
+    await group1.save();
+    await group2.save();
+
+    // Create the tournament
+
+    await createSchedulelocal(tournament,group1,group2)
+   
+
     res.sendStatus(200);
   } catch (error) {
     console.log(error);
@@ -72,6 +107,80 @@ async function createTournament(req, res) {
   }
 }
 
+async function createSchedulelocal(tournament, group1, group2 ) {
+  try {
+    
+
+    // Helper function to create a round-robin schedule for a given group
+    const createRoundRobinSchedule = async (group) => {
+      const games = [];
+      const numTeams = group.teams.length;
+
+      for (let i = 0; i < numTeams; i++) {
+        for (let j = i + 1; j < numTeams; j++) {
+          // Create a game for each pair of teams
+          const newGame = new Game({
+            team1: group.teams[i],
+            team2: group.teams[j],
+            roundOf: "Group Stage",
+            tournament: tournament,
+            startDate: new Date(), // Replace this with the actual start date and time
+          });
+          await newGame.save();
+          games.push(newGame._id);
+        }
+      }
+
+      return games;
+    };
+
+    // Create round-robin schedules for both groups
+    const group1Games = await createRoundRobinSchedule(group1);
+    const group2Games = await createRoundRobinSchedule(group2);
+
+    // Create the 3rd place game
+    const thirdPlaceGame = new Game({
+      team1: null, // Replace with the actual team ID
+      team2: null, // Replace with the actual team ID
+      roundOf: "3rd Place Game",
+      tournament: tournament,
+      startDate: new Date(), // Replace this with the actual start date and time
+    });
+    await thirdPlaceGame.save();
+
+    // Create the final game
+    const finalGame = new Game({
+      team1: null, // Replace with the actual team ID
+      team2: null, // Replace with the actual team ID
+      roundOf: "Final",
+      tournament: tournament,
+      startDate: new Date(), // Replace this with the actual start date and time
+    });
+    await finalGame.save();
+
+    // Create the schedule with the group and game information
+    const schedule = new Schedule({
+      tournament,
+      group1,
+      group2,
+      group1Games,
+      group2Games,
+      thirdPlaceGame: thirdPlaceGame._id,
+      final: finalGame._id,
+    });
+
+    await schedule.save();
+    
+  } catch (error) {
+    console.error('Error creating schedule:', error);
+    
+  }
+}
+
+
+module.exports = {
+  createTournament,
+};
 async function deleteTournament(req, res) {
   try {
     //console.log(req.cookies)

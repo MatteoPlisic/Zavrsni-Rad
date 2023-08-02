@@ -55,15 +55,21 @@ async function login(req, res) {
 }
 
 async function checkSuperUser(req, res) {
-  const token = req.cookies.Authorization;
-  const decoded = jwt.verify(token, process.env.SECRET);
-  console.log(decoded)
-  const user = await User.findById(decoded.sub)
-  console.log(user)
-  if (user.superUser)
-    res.sendStatus(200)
-  else
-    res.sendStatus(401)
+
+
+  try {
+    const token = req.cookies.Authorization;
+    const decoded = jwt.verify(token, process.env.SECRET);
+    console.log(decoded)
+    const user = await User.findById(decoded.sub)
+    console.log(user)
+    if (user.superUser)
+      res.sendStatus(200)
+    else
+      res.sendStatus(401)
+  } catch (error) {
+    console.log("Not superUser")
+  }
 
 }
 
