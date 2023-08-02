@@ -13,7 +13,9 @@ const SingleTournamentPage = () => {
     async function getTournament() {
       try {
         const res = await axios.get(`/tournament/details/${id}`);
+        const schedule = await axios.get(`/schedule/${res.data.tournament.schedule}`)
         console.log(res)
+        console.log(schedule)
         setTournament(res.data.tournament);
         setGames(res.data.games);
         setTeams(res.data.teams);
