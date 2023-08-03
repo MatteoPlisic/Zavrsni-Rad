@@ -38,7 +38,7 @@ const Navbar = () => {
 
     async function checkSuperUser() {
       const superUser = await axios.get('/superUser', { withCredentials: true })
-      console.log(superUser)
+      //console.log(superUser)
       if (superUser.status === 200)
         setisSuperUser(true)
     }

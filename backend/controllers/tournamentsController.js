@@ -7,6 +7,7 @@ const Game = require("../models/game")
 const Group = require("../models/group");
 const Schedule = require("../models/schedule");
 const { createSchedule } = require("../controllers/schedulesController");
+const mongoose = require('mongoose');
 
 async function getTournaments(req, res) {
   try {
@@ -70,12 +71,13 @@ async function createTournament(req, res) {
       format,
       user: decoded.sub,
       teams: selectedTeams,
+      schedule:null
     });
 
     //console.log(tournament)
     // Create two groups of four teams each
-    const group1 = new Group({ tournament: tournament, teams: [] });
-    const group2 = new Group({ tournament: tournament, teams: [] });
+    const group1 = new Group({ tournament: tournament, teams: [],teamScores:[] });
+    const group2 = new Group({ tournament: tournament, teams: [],teamScores:[] });
 
     // Save the groups to the database
     await group1.save();
@@ -86,12 +88,15 @@ async function createTournament(req, res) {
     for (let i = 0; i < numTeams; i++) {
       if (i < numTeams / 2) {
         group1.teams.push(selectedTeams[i]);
+        group1.teamScores.push({ team:new mongoose.Types.ObjectId(selectedTeams[i]), goalsScored: 0, points: 0 })
       } else {
         group2.teams.push(selectedTeams[i]);
+        group2.teamScores.push({ team:new mongoose.Types.ObjectId(selectedTeams[i]), goalsScored: 0, points: 0 })
       }
     }
 
     // Save the groups with the assigned teams to the database
+    console.log(group1)
     await group1.save();
     await group2.save();
 
@@ -100,7 +105,9 @@ async function createTournament(req, res) {
     // Create the tournament
 
     const schedule = await createSchedulelocal(tournament,group1,group2)
-    console.log(schedule)
+    tournament.schedule = schedule
+    await tournament.save()
+    console.log(tournament.schedule)
    
     res.sendStatus(200);
   } catch (error) {

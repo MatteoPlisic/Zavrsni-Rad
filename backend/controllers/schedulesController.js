@@ -168,12 +168,12 @@ async function getSchedules(req, res) {
     try {
       const scheduleId = req.params.id;
       const schedule = await Schedule.findById(scheduleId)
-        .populate({ path: 'group1', populate: { path: 'teams', select: 'name' } })
-        .populate({ path: 'group2', populate: { path: 'teams', select: 'name' } })
-        .populate({ path: 'group1Games', populate: { path: 'team1 team2', select: 'name' } })
-        .populate({ path: 'group2Games', populate: { path: 'team1 team2', select: 'name' } })
-        .populate({ path: 'thirdPlaceGame', populate: { path: 'team1 team2', select: 'name' } })
-        .populate({ path: 'final', populate: { path: 'team1 team2', select: 'name' } });
+       .populate({ path: 'group1', populate: { path: 'teams teamScores.team teamInfo' } })
+  .populate({ path: 'group2', populate: { path: 'teams teamScores.team teamInfo' } })
+  .populate({ path: 'group1Games', populate: { path: 'team1 team2', select: 'name' } })
+  .populate({ path: 'group2Games', populate: { path: 'team1 team2', select: 'name' } })
+  .populate({ path: 'thirdPlaceGame', populate: { path: 'team1 team2', select: 'name' } })
+  .populate({ path: 'final', populate: { path: 'team1 team2', select: 'name' } });
   
       if (!schedule) {
         return res.status(404).json({ error: 'Schedule not found' });

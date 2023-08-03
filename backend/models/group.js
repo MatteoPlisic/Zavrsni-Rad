@@ -31,7 +31,17 @@ const groupSchema = new mongoose.Schema({
   ],
 });
 
+// Define the 'teamInfo' virtual field
+groupSchema.virtual('teamInfo', {
+  ref: 'Team', // The model to use for populating the virtual field
+  localField: 'teamScores.team',
+  foreignField: '_id',
+  justOne: false, // Set to 'false' to get an array of team objects
+});
 
+// Auto-populate the 'teamInfo' virtual field when querying for groups
+groupSchema.set('toObject', { virtuals: true });
+groupSchema.set('toJSON', { virtuals: true });
 
 const Group = mongoose.model('Group', groupSchema);
 
