@@ -20,17 +20,11 @@ const MyTournamentsPage = () => {
     fetchTournaments();
   });
 
-  async function simulateTournament(tournament_id) {
+  async function readyTournament(tournament) {
     try {
-      const resp = await axios.post('/tournaments/simulate', { tournament_id }, { withCredentials: true });
-      console.log(resp); // Check the response data
-
-      setTournaments((tournaments) =>
-        tournaments.map((tournament) =>
-          tournament._id === tournament_id ? { ...tournament, isDone: true } : tournament
-        )
-      );
-      setRefresh(!refresh)
+      tournament.finalised = true
+      const response = await axios.put(`/tournaments/${tournament._id}`,{tournament},{withCredentials:true})
+      console.log(response)
       // No need to log 'tournaments' here.
     } catch (error) {
       console.log(error);
@@ -49,7 +43,7 @@ const MyTournamentsPage = () => {
 
   return (
     <Container style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '100px' }}>
-      <TableContainer component={Paper} style={{ maxWidth: '800px' }}>
+      <TableContainer component={Paper} style={{ maxWidth: '900px' }}>
         <Table>
           <TableHead>
             <TableRow>
@@ -88,7 +82,7 @@ const MyTournamentsPage = () => {
                   {!tournament.isDone && <p style={{ color: 'orange' }}> To be Played</p>}
                 </TableCell>
                 <TableCell>
-                {!tournament.isDone && <Button color='warning' variant='contained' onClick={() => simulateTournament(tournament._id)}>Simulate</Button>}
+                {!tournament.finalised && <Button color='warning' variant='contained' onClick={() => readyTournament(tournament)}>Tournament is ready</Button>}
                 </TableCell>
               </TableRow>
             ))}

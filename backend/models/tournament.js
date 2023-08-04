@@ -37,6 +37,10 @@ const tournamentSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Schedule',
   },
+  finalised:{
+    type:Boolean,
+    default:false
+  }
 });
 
 const Tournament = mongoose.model('Tournament', tournamentSchema);

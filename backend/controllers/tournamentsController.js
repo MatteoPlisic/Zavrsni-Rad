@@ -238,7 +238,7 @@ async function updateTournament(req, res) {
     const tournamentId = req.params.id;
     
     // Check if the user is authorized to update the tournament
-    const tournament = await Tournament.findOne({ _id: tournamentId });
+    const tournament = await Tournament.findOne({ _id: req.params.id });
     if (!tournament) {
       return res.status(404).json({ message: "Tournament not found" });
     }
@@ -247,10 +247,10 @@ async function updateTournament(req, res) {
     if (tournament.user.toString() !== decoded.sub) {
       return res.status(403).json({ message: "You are not authorized to update this tournament" });
     }
-
+    console.log(req.body.tournament)
     // Extract the updated tournament data from the request body
-    const { name, date, location, format,selectedTeams } = req.body;
-    const teams = new Team([selectedTeams]);
+    const { name, date, location, format,teams,finalised } = req.body.tournament;
+    const Teams = new Team([teams]);
     console.log(teams )
     // Check if a tournament with the updated name already exists
     const existingTournament = await Tournament.findOne({ name });
@@ -263,7 +263,8 @@ async function updateTournament(req, res) {
     tournament.date = date;
     tournament.location = location;
     tournament.format = format;
-    tournament.teams = selectedTeams
+    tournament.teams = teams
+    tournament.finalised = finalised
     // Save the updated tournament
     await tournament.save();
 

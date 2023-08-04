@@ -8,14 +8,14 @@ const SingleTournamentPage = () => {
   const [tournament, setTournament] = useState(null);
   const [teams, setTeams] = useState([]);
   const [games, setGames] = useState([]);
+  const [schedule, setSchedule] = useState(null);
 
   useEffect(() => {
     async function getTournament() {
       try {
         const res = await axios.get(`/tournament/details/${id}`);
-        const schedule = await axios.get(`/schedule/${res.data.tournament.schedule}`)
-        console.log(res)
-        console.log(schedule)
+        const scheduleRes = await axios.get(`/schedule/${res.data.tournament.schedule}`);
+        setSchedule(scheduleRes.data);
         setTournament(res.data.tournament);
         setGames(res.data.games);
         setTeams(res.data.teams);
@@ -44,6 +44,70 @@ const SingleTournamentPage = () => {
         <>
           <Typography variant="h3">{tournament.name}</Typography>
 
+          {/* Table for schedule.group1.teamScores */}
+          {schedule && schedule.group2 && (
+            <div>
+              <Typography variant="h5">Group 1:</Typography>
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Team</TableCell>
+                      <TableCell>Goal difference</TableCell>
+                      <TableCell>Points</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {schedule.group2[0].teamScores.sort((a, b) => {
+                      if (b.points !== a.points) {
+                        return b.points - a.points; // Sort by points in descending order
+                      } else {
+                        return b.goalsScored - a.goalsScored; // If points are equal, sort by goalsScored in descending order
+                      }
+                    }).map((teamScore) => (
+                      <TableRow key={teamScore._id}>
+                        <TableCell>{teamScore.team.name}</TableCell>
+                        <TableCell>{teamScore.goalsScored}</TableCell>
+                        <TableCell>{teamScore.points}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
+          )}
+          {schedule && schedule.group1 && (
+            <div>
+              <Typography variant="h5">Group 2 :</Typography>
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Team</TableCell>
+                      <TableCell>Goal difference</TableCell>
+                      <TableCell>Points</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {schedule.group1[0].teamScores.sort((a, b) => {
+                      if (b.points !== a.points) {
+                        return b.points - a.points; // Sort by points in descending order
+                      } else {
+                        return b.goalsScored - a.goalsScored; // If points are equal, sort by goalsScored in descending order
+                      }
+                    }).map((teamScore) => (
+                      <TableRow key={teamScore._id}>
+                        <TableCell>{teamScore.team.name}</TableCell>
+                        <TableCell>{teamScore.goalsScored}</TableCell>
+                        <TableCell>{teamScore.points}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
+          )}
+
           <Typography variant="h5">Games:</Typography>
           <TableContainer component={Paper}>
             <Table>
@@ -57,13 +121,19 @@ const SingleTournamentPage = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {games.map((game) => (
+                {games.sort((a, b) => {
+                  if (a.startDate && b.startDate) {
+                    return new Date(a.startDate) - new Date(b.startDate);
+                  }
+                  // If either startDate is missing, consider the one with startDate as greater (bottom)
+                  return !a.startDate ? 1 : -1;
+                }).map((game) => (
                   <TableRow key={game._id}>
                     <TableCell>{getTeamName(game.team1)}</TableCell>
                     <TableCell>{getTeamName(game.team2)}</TableCell>
                     <TableCell>{game.roundOf}</TableCell>
-                    <TableCell>{game.team1Score}</TableCell>
-                    <TableCell>{game.team2Score}</TableCell>
+                    <TableCell>{game.team1Score > -1 ? game.team1Score : "will be played on"}</TableCell>
+                    <TableCell>{game.team2Score > -1 ? game.team2Score : game.startDate}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

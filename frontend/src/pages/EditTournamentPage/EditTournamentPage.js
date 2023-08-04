@@ -16,6 +16,7 @@ const EditTournamentPage = () => {
   const [selectedTeams, setSelectedTeams] = useState([])
   const [teams, setTeams] = useState([])
   const [schedule, setSchedule] = useState('')
+  const [finalised,setFinalised] = useState(false)
   const [thirdPlaceGame, setThirdPlaceGame] = useState()
 
   const handleCheckboxChange = (teamId) => {
@@ -51,6 +52,7 @@ const EditTournamentPage = () => {
         setLocation(tournament.data.location)
         setFormat(tournament.data.format.toString())
         setSelectedTeams(getteams);
+        setFinalised(tournament.data.finalised)
         // console.log(selectedTeams)
         console.log(Schedule.data)
       } catch (error) {
@@ -120,6 +122,8 @@ const EditTournamentPage = () => {
   return (
     <Container maxWidth="sm">
       <h2>Edit Tournament</h2>
+      {!finalised && (
+        <>
       <form onSubmit={handleSubmit}>
         <FormControl fullWidth margin="normal">
           <TextField
@@ -194,6 +198,8 @@ const EditTournamentPage = () => {
 
         </Table>
       </TableContainer>
+      </>
+      )}
       {/* Display the schedule */}
       {schedule && (
         <>
