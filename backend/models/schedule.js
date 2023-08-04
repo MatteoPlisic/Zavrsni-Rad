@@ -80,6 +80,27 @@ scheduleSchema.virtual("group2GamesInfo", {
   options: { populate: { path: "team1 team2" } }, // Populate the 'team1' and 'team2' fields of the 'Game' model
 });
 
+scheduleSchema.virtual('finalGameInfo', {
+  ref: 'Game',
+  localField: 'final',
+  foreignField: '_id',
+  justOne: true,
+  options: {
+    populate: {
+      path: 'team1 team2', // Populate the 'team1' and 'team2' fields of the 'Game' model
+      select: 'name', // Select only the 'name' field of the teams
+    },
+  },
+});
+// Use 'populate' to get the entire game object for the third place game
+scheduleSchema.virtual("thirdPlaceGameInfo", {
+  ref: "Game",
+  localField: "thirdPlaceGame",
+  foreignField: "_id",
+  justOne: false,
+  // Add the 'populate' option for 'team1' and 'team2' fields within the referenced 'Game' model
+  options: { populate: { path: "team1 team2" } },
+});
 
 
 const Schedule = mongoose.model('Schedule', scheduleSchema);

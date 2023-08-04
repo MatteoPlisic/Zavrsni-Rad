@@ -68,6 +68,23 @@ async function updateGroup(req, res) {
   }
 }
 
+async function finishGroup(req,res){
+  try {
+    const groupId = req.params.id;
+    
+    
+    // Optional: You can add additional validation here if needed, such as checking if the group exists
+
+    const group = await Group.findById(groupId);
+    group.isFinished = true
+    await group.save()
+    res.json(group)
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({error:'Server error'})
+  }
+}
+
 // Delete a group by ID
 async function deleteGroup(req, res) {
   try {
@@ -90,4 +107,5 @@ module.exports = {
   getGroupById,
   updateGroup,
   deleteGroup,
+  finishGroup
 };

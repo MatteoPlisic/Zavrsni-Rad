@@ -173,7 +173,8 @@ async function getSchedules(req, res) {
   .populate({ path: 'group1Games', populate: { path: 'team1 team2', select: 'name' } })
   .populate({ path: 'group2Games', populate: { path: 'team1 team2', select: 'name' } })
   .populate({ path: 'thirdPlaceGame', populate: { path: 'team1 team2', select: 'name' } })
-  .populate({ path: 'final', populate: { path: 'team1 team2', select: 'name' } });
+  .populate({ path: 'final', populate: { path: 'team1 team2', select: 'name' } })
+      
   
       if (!schedule) {
         return res.status(404).json({ error: 'Schedule not found' });
@@ -185,11 +186,81 @@ async function getSchedules(req, res) {
       res.status(500).json({ error: 'Server error' });
     }
   }
+
+  async function generateFinals(req, res) {
+    const scheduleId = req.params.id;
+  
+    try {
+      // Find the schedule by ID and populate the groups and their teams
+      const schedule = await Schedule.findById(req.params.id)
+      
+
+  if (!schedule) {
+    return res.status(404).json({ error: "Schedule not found" });
+  }
+
+  // Explicitly populate the 'teamScores' field for group1 and group2
+  
+      console.log("group1 teams:");
+
+      const group1 = await Group.findById(schedule.group1)
+      const group2 = await Group.findById(schedule.group2)
+      
+
+      // Find the team with the most points in group1
+      //console.log( schedule.group1Info[0].teamScores)
+     
+
+      group2.teamScores.sort((a, b) => {
+        if (b.points !== a.points) {
+          return b.points - a.points; // Sort by points in descending order
+        } else {
+          return b.goalsScored - a.goalsScored; // If points are equal, sort by goalsScored in descending order
+        }
+      });
+
+      group1.teamScores.sort((a, b) => {
+        if (b.points !== a.points) {
+          return b.points - a.points; // Sort by points in descending order
+        } else {
+          return b.goalsScored - a.goalsScored; // If points are equal, sort by goalsScored in descending order
+        }
+      });
+
+      console.log(group2.teamScores[1])
+      
+      let finalGame = await Game.findById(schedule.final)
+      
+      finalGame.team1 = group1.teamScores[0].team
+      finalGame.team2 = group2.teamScores[0].team
+
+      let thirdPlaceGame = await Game.findById(schedule.thirdPlaceGame)
+
+      thirdPlaceGame.team1 = group1.teamScores[1].team
+      thirdPlaceGame.team2 = group2.teamScores[1].team
+
+      await thirdPlaceGame.save()
+
+     
+      await finalGame.save() 
+     
+      
+      await schedule.save();
+  
+      // Return the result with the final game details
+      res.status(200).json({ thirdPlaceGame });
+    } catch (error) {
+      console.error("Error generating finals:", error);
+      res.status(500).json({ error: "Error generating finals" });
+    }
+  }
+
   module.exports = {
     createSchedule,
     getSchedules,
     getScheduleById,
-    createSchedulelocal
+    createSchedulelocal,
+    generateFinals
   };
   
   

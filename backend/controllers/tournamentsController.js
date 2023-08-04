@@ -142,6 +142,7 @@ async function createSchedulelocal(tournament, group1, group2 ) {
             roundOf: "Group Stage",
             tournament: group.tournament, // Use the group's tournament for the game
             startDate, // Use the appropriate start date
+            group:group
           });
           await newGame.save();
           games.push(newGame._id);

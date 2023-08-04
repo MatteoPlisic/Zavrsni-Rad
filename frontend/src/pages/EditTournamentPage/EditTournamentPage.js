@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { Button, Container, FormControl, MenuItem, Select, } from '@mui/material';
 import { Checkbox, FormLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
@@ -16,6 +16,7 @@ const EditTournamentPage = () => {
   const [selectedTeams, setSelectedTeams] = useState([])
   const [teams, setTeams] = useState([])
   const [schedule, setSchedule] = useState('')
+  const [thirdPlaceGame, setThirdPlaceGame] = useState()
 
   const handleCheckboxChange = (teamId) => {
     if (selectedTeams.includes(teamId)) {
@@ -34,6 +35,9 @@ const EditTournamentPage = () => {
         const tournament = await axios.get(`/tournaments/${id}`, { withCredentials: true });
         const Allteams = await axios.get("/teams", { withCredentials: true });
         const Schedule = await axios.get(`/schedule/${tournament.data.schedule}`)
+
+        const game = await axios.get(`/game/${Schedule.data.final._id}`)
+        //console.log(game)
         //console.log(Schedule)
         // console.log(tournament)
         setSchedule(Schedule)
@@ -57,7 +61,20 @@ const EditTournamentPage = () => {
     fetchTournament();
   }, []);
 
-
+  async function endGroup(id) {
+    const res = await axios.get(`/finish-group/${id}`)
+    if (schedule.data.group1[0]._id === id) {
+      schedule.data.group1[0].isFinished = true
+    }
+    else {
+      schedule.data.group2[0].isFinished = true
+    }
+    if ((schedule.data.group1[0].isFinished === true) && schedule.data.group1[0].isFinished === true) {
+      await axios.get(`http://localhost:3000/schedule-finals/${schedule.data._id}`)
+    }
+    window.location.reload(false);
+    console.log(res)
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -181,23 +198,36 @@ const EditTournamentPage = () => {
       {schedule && (
         <>
           <h2>Group 1</h2>
+          {!schedule.data.group1[0].isFinished &&
+            <Button onClick={() => endGroup(schedule.data.group1[0]._id)}>
+              End Group
+            </Button>}
           <TableContainer>
             <Table>
               <TableHead>
                 <TableRow>
                   <TableCell>Team</TableCell>
-                  <TableCell>Goals</TableCell>
+                  <TableCell>Goals Differential</TableCell>
                   <TableCell>Points</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {schedule.data.group1[0].teamScores.map((teamScore) => (
-                  <TableRow key={teamScore._id}>
-                    <TableCell>{teamScore.team.name}</TableCell>
-                    <TableCell>{teamScore.goalsScored}</TableCell>
-                    <TableCell>{teamScore.points}</TableCell>
-                  </TableRow>
-                ))}
+                {schedule.data.group1[0].teamScores.sort((a, b) => {
+                  if (b.points !== a.points) {
+                    return b.points - a.points; // Sort by points in descending order
+                  } else {
+                    return b.goalsScored - a.goalsScored; // If points are equal, sort by goalsScored in descending order
+                  }
+                })
+                  .slice() // Create a copy of the array to avoid modifying the original array
+                  .sort((a, b) => b.points - a.points) // Sort the array by points in descending order
+                  .map((teamScore) => (
+                    <TableRow key={teamScore._id}>
+                      <TableCell>{teamScore.team.name}</TableCell>
+                      <TableCell>{teamScore.goalsScored}</TableCell>
+                      <TableCell>{teamScore.points}</TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </TableContainer>
@@ -206,23 +236,36 @@ const EditTournamentPage = () => {
       {schedule && (
         <>
           <h2>Group 2</h2>
+          {!schedule.data.group2[0].isFinished &&
+            <Button onClick={() => endGroup(schedule.data.group2[0]._id)}>
+              End Group
+            </Button>}
           <TableContainer>
             <Table>
               <TableHead>
                 <TableRow>
                   <TableCell>Team</TableCell>
-                  <TableCell>Goals</TableCell>
+                  <TableCell>Goals Differential</TableCell>
                   <TableCell>Points</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {schedule.data.group2[0].teamScores.map((teamScore) => (
-                  <TableRow key={teamScore._id}>
-                    <TableCell>{teamScore.team.name}</TableCell>
-                    <TableCell>{teamScore.goalsScored}</TableCell>
-                    <TableCell>{teamScore.points}</TableCell>
-                  </TableRow>
-                ))}
+                {schedule.data.group2[0].teamScores.sort((a, b) => {
+                  if (b.points !== a.points) {
+                    return b.points - a.points; // Sort by points in descending order
+                  } else {
+                    return b.goalsScored - a.goalsScored; // If points are equal, sort by goalsScored in descending order
+                  }
+                })
+                  .slice() // Create a copy of the array to avoid modifying the original array
+                  .sort((a, b) => b.points - a.points) // Sort the array by points in descending order
+                  .map((teamScore) => (
+                    <TableRow key={teamScore._id}>
+                      <TableCell>{teamScore.team.name}</TableCell>
+                      <TableCell>{teamScore.goalsScored}</TableCell>
+                      <TableCell>{teamScore.points}</TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </TableContainer>
@@ -236,10 +279,12 @@ const EditTournamentPage = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Faza</TableCell>
-                  <TableCell>Tim1</TableCell>
-                  <TableCell>Tim2</TableCell>
-                  <TableCell>Vrijeme</TableCell>
+                  <TableCell>Phase</TableCell>
+                  <TableCell>team1</TableCell>
+                  <TableCell>team2</TableCell>
+                  <TableCell>Time</TableCell>
+                  <TableCell>Result</TableCell>
+
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -248,12 +293,12 @@ const EditTournamentPage = () => {
                     <TableCell>{game.roundOf}</TableCell>
                     <TableCell>{game.team1.name}</TableCell>
                     <TableCell>{game.team2.name}</TableCell>
-                    <TableCell>{Date(game.startDate)}</TableCell>
-                    <TableCell>
-                      <Button>
-                        Edit
-                      </Button>
+                    <TableCell>{game.startDate}</TableCell>
+                    <TableCell>{(game.team1Score > -1 && game.team2Score > -1) ? `${game.team1Score} - ${game.team2Score}` : <Button component={Link} to={`/edit-game/${game._id}`}>
+                      Edit
+                    </Button>}
                     </TableCell>
+
                   </TableRow>
                 ))}
                 {schedule.data.group2Games.map((game) => (
@@ -261,27 +306,14 @@ const EditTournamentPage = () => {
                     <TableCell>{game.roundOf}</TableCell>
                     <TableCell>{game.team1.name}</TableCell>
                     <TableCell>{game.team2.name}</TableCell>
-                    <TableCell>{Date(game.startDate)}</TableCell>
-                    <TableCell>
-                      <Button>
-                        Edit
-                      </Button>
+                    <TableCell>{game.startDate}</TableCell>
+                    <TableCell>{(game.team1Score > -1 && game.team2Score > -1) ? `${game.team1Score} - ${game.team2Score}` : <Button component={Link} to={`/edit-game/${game._id}`}>
+                      Edit
+                    </Button>}
                     </TableCell>
                   </TableRow>
                 ))}
-                {schedule.data.group1Games.map((game) => (
-                  <TableRow key={game._id}>
-                    <TableCell>{game.roundOf}</TableCell>
-                    <TableCell>{game.team1.name}</TableCell>
-                    <TableCell>{game.team2.name}</TableCell>
-                    <TableCell>{Date(game.startDate)}</TableCell>
-                    <TableCell>
-                      <Button>
-                        Edit
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
+
                 {schedule.data.thirdPlaceGame && (
                   <TableRow key={schedule.data.thirdPlaceGame._id}>
                     <TableCell>{schedule.data.thirdPlaceGame.roundOf}</TableCell>
@@ -297,11 +329,13 @@ const EditTournamentPage = () => {
                     </TableCell>
                     <TableCell>
                       {schedule.data.thirdPlaceGame.startDate
-                        ? Date(schedule.data.thirdPlaceGame.startDate)
+                        ? schedule.data.thirdPlaceGame.startDate
                         : "To be determined"}
                     </TableCell>
                     <TableCell>
-                      <Button>Edit</Button>
+                      <Button component={Link} to={`/edit-game/${schedule.data.thirdPlaceGame._id}`}>
+                        Edit
+                      </Button>
                     </TableCell>
                   </TableRow>
 
@@ -322,11 +356,13 @@ const EditTournamentPage = () => {
                     </TableCell>
                     <TableCell>
                       {schedule.data.final.startDate
-                        ? Date(schedule.data.final.startDate)
+                        ? schedule.data.final.startDate
                         : "To be determined"}
                     </TableCell>
                     <TableCell>
-                      <Button>Edit</Button>
+                      <Button component={Link} to={`/edit-game/${schedule.data.final._id}`}>
+                        Edit
+                      </Button>
                     </TableCell>
                   </TableRow>
                 )}

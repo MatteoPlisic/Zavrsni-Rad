@@ -4,29 +4,41 @@ const gameSchema = new mongoose.Schema({
   team1: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Team', // Reference the 'Team' model
-    
+    default:null
   },
   team2: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Team', // Reference the 'Team' model
-    
+    default:null
   },
   roundOf: {
     type: String,
   },
   team1Score: {
     type: Number,
+    default:-1
   },
   team2Score: {
     type: Number,
+    default:-1
   },
   tournament: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Team',
   },
   startDate: {
     type: Date, // Date and time of the game
     //required: true,
   },
+  group:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Group',
+    default:null
+  },
+  isDone:{
+    type:Boolean,
+    default:false
+  }
 });
 
 // Create a virtual field 'team1Name' to access the team1's name

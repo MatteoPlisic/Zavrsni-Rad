@@ -29,6 +29,10 @@ const groupSchema = new mongoose.Schema({
       },
     },
   ],
+  isFinished:{
+    type:Boolean,
+    default:false
+  }
 });
 
 // Define the 'teamInfo' virtual field
