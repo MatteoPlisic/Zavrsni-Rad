@@ -28,7 +28,7 @@ async function getGameById(req, res) {
   .populate('team1') // Populate the 'team1' field
   .populate('team2') // Populate the 'team2' field
   .exec();
-    console.log(game)
+    //console.log(game)
     if (!game) {
       return res.status(404).json({ error: 'Game not found' });
     }
@@ -40,18 +40,25 @@ async function getGameById(req, res) {
 
 // Update a game by ID
 async function updateGameById(req, res) {
-  try {
+  try { 
+  
     const updatedGame = await Game.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     }).populate('team1 team2');
     if (!updatedGame) {
       return res.status(404).json({ error: 'Game not found' });
     }
-
+    console.log("body of req" +req.body.data)
     const { team1Score, team2Score, team1, team2 } = updatedGame;
     let team1Points = 0;
     let team2Points = 0;
 
+    updatedGame.team1Score = team1Score
+    updatedGame.team2Score = team2Score
+
+    await updatedGame.save()
+    console.log(team1Score)
+    if(updatedGame.group){
     if (team1Score > team2Score) {
       team1Points = 3;
     } else if (team2Score > team1Score) {
@@ -81,9 +88,10 @@ async function updateGameById(req, res) {
 
     // Save the updated group
     await group.save();
-
+    }
     res.status(200).json(updatedGame);
   } catch (error) {
+    console.log(error)
     res.status(500).json({ error: 'Error updating the game' });
   }
 }

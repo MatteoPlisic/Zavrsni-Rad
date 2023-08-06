@@ -129,28 +129,44 @@ async function createSchedulelocal(tournament, group1, group2 ) {
 
       const startDateX = new Date(group.tournament.date.getTime() +  24 * 60 * 60 * 1000) // Replace '2023-08-01' with your desired start date for group 1 games
       const startDateY = new Date(group.tournament.date.getTime())
-
-
+      let gameTime = 0
+      let gameDay = 0
       for (let i = 0; i < numTeams - 1; i++) {
         for (let j = i + 1; j < numTeams; j++) {
           // Determine the appropriate start date based on groupNumber
-          const startDate = groupNumber === 1 ? startDateX : startDateY;
+          const startDate = gameDay%2 ? startDateX : startDateY;
+          gameDay++;
+          let startHour;
+          if (gameTime === 0) {
+            startHour = groupNumber === 1 ? 10 : 12; // 10 am for group 1 and 12 pm for group 2 on the first day
+          } else if (gameTime === 1) {
+            startHour = groupNumber === 1 ? 14 : 16; // 2 pm for group 1 and 4 pm for group 2 on the first day
+          } else {
+            startHour = groupNumber === 1 ? 18 : 20; // 6 pm for group 1 and 8 pm for group 2 on the first day
+          }
     
+          // Set the start time for the game
+          startDate.setHours(startHour);
           const newGame = new Game({
             team1: group.teams[i],
             team2: group.teams[j],
             roundOf: "Group Stage",
             tournament: group.tournament, // Use the group's tournament for the game
-            startDate, // Use the appropriate start date
-            group:group
+            startDate, // Use the appropriate start date and time
+            group: group,
           });
           await newGame.save();
           games.push(newGame._id);
+          gameTime++;
+          // Increment the gameTime for the next iteration
+          if(gameTime === 3)
+          gameTime = 0
         }
       }
     
       return games;
     };
+   
     
 
     // Create round-robin schedules for both groups
@@ -164,7 +180,7 @@ async function createSchedulelocal(tournament, group1, group2 ) {
       team2: null, // Replace with the actual team ID
       roundOf: "3rd Place Game",
       tournament: tournament,
-     startDate: new Date(tournament.date.getTime() + 2 * 24 * 60 * 60 * 1000), // Replace this with the actual start date and time
+     startDate: new Date(tournament.date.getTime() + 2 * 24 * 60 * 60 * 1000).setHours(18), // Replace this with the actual start date and time
     });
     await thirdPlaceGame.save();
 
@@ -174,7 +190,7 @@ async function createSchedulelocal(tournament, group1, group2 ) {
       team2: null, // Replace with the actual team ID
       roundOf: "Final",
       tournament: tournament,
-      startDate: new Date(tournament.date.getTime() + 2 * 24 * 60 * 60 * 1000), // Replace this with the actual start date and time
+      startDate: new Date(tournament.date.getTime() + 2 * 24 * 60 * 60 * 1000).setHours(20), // Replace this with the actual start date and time
     });
     await finalGame.save();
 

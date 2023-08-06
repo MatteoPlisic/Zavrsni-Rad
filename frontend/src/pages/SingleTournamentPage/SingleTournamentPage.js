@@ -35,7 +35,27 @@ const SingleTournamentPage = () => {
 
   const getTeamName = (teamId) => {
     const team = teams.find((team) => team._id === teamId);
-    return team ? team.name : 'Unknown Team';
+    return team ? team.name : 'To be determined';
+  };
+
+  const formatDate = (dateString) => {
+    const startDate = new Date(dateString);
+
+    const day = startDate.getDate().toString().padStart(2, '0');
+    const month = (startDate.getMonth() + 1).toString().padStart(2, '0');
+    const year = startDate.getFullYear();
+
+    return `${day}-${month}-${year}`;
+  };
+
+  // Function to format the time in "hh:mm" format
+  const formatTime = (dateString) => {
+    const startDate = new Date(dateString);
+
+    const hours = startDate.getHours().toString().padStart(2, '0');
+    const minutes = startDate.getMinutes().toString().padStart(2, '0');
+
+    return `${hours}:${minutes}`;
   };
 
   return (
@@ -133,7 +153,7 @@ const SingleTournamentPage = () => {
                     <TableCell>{getTeamName(game.team2)}</TableCell>
                     <TableCell>{game.roundOf}</TableCell>
                     <TableCell>{game.team1Score > -1 ? game.team1Score : "will be played on"}</TableCell>
-                    <TableCell>{game.team2Score > -1 ? game.team2Score : game.startDate}</TableCell>
+                    <TableCell>{game.team2Score > -1 ? game.team2Score : formatDate(game.startDate) +" at "+ formatTime(game.startDate)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
