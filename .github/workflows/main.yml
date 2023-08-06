@@ -1,0 +1,27 @@
+name: NPM Build and Start
+
+on:
+  push: # Trigger the workflow on every push (commit)
+    branches-ignore:
+      - 'main' # Ignore the main branch to prevent duplicate builds
+
+jobs:
+  build_and_start:
+    name: Build and Start
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build and Start Frontend
+        working-directory: frontend
+        run: |
+          npm install
+          npm start
+
+      - name: Build and Start Backend
+        working-directory: backend
+        run: |
+          npm install
+          npm start
