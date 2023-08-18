@@ -66,6 +66,7 @@ async function deleteTeam(req, res) {
         const {id} = req.params
        
         const team = await Team.findById(id);
+        console.log(team)
         if(!team){
             return res.status(404).json({error:"Team not found"})
         }
@@ -100,7 +101,7 @@ async function updateTeam(req, res) {
       const updatedTeam = await team.save();
   
       // Return the updated team as the response
-      res.json(updatedTeam);
+      res.sendStatus(200);
     } catch (error) {
       // If there's an error during the update process, return an error response
       res.status(500).json({ message: 'Error updating team', error: error.message });

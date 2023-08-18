@@ -29,7 +29,8 @@ const EditTeamPage = () => {
   const handleEditTeam = async () => {
     try {
       setLoading(true);
-      await axios.put(`/teams/${id}`, { name: teamName });
+      const res=  await axios.put(`/teams/${id}`, { name: teamName });
+      console.log(res)
       setLoading(false);
       navigate('/administration'); // Redirect to the administration page after editing the team
     } catch (error) {

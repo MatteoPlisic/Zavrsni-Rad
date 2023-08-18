@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { Button, Container, FormControl, MenuItem, Select, } from '@mui/material';
 import { Checkbox, FormLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
@@ -18,6 +18,7 @@ const EditTournamentPage = () => {
   const [schedule, setSchedule] = useState('')
   const [finalised, setFinalised] = useState(false)
   const [thirdPlaceGame, setThirdPlaceGame] = useState()
+  const navigate = useNavigate('')
 
   const handleCheckboxChange = (teamId) => {
     if (selectedTeams.includes(teamId)) {
@@ -103,7 +104,10 @@ const EditTournamentPage = () => {
 
        console.log('Tournament updated:');
         setSuccessMessage('Tournament updated:');
+      
         setValidationMessage('');
+        const response = await axios.delete(`/my-tournaments/${id}`,{withCredentials:true})
+        navigate('/my-tournaments')
       }
     } catch (error) {
       console.error('Error updating tournament:', error);

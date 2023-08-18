@@ -57,7 +57,7 @@ if (process.env.NODE_ENV != "production") {
   app.get("/teams",teamsController.getTeams)
   app.get("/teams/:id",teamsController.getTeamById)
   app.post("/teams",teamsController.createTeam)
-  app.put("/teams",teamsController.updateTeam)
+  app.put("/teams/:id",teamsController.updateTeam)
   app.delete("/teams/:id",teamsController.deleteTeam)
 
 
