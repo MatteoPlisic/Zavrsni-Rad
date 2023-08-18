@@ -23,7 +23,9 @@ const MyTournamentsPage = () => {
   async function readyTournament(tournament) {
     try {
       tournament.finalised = true
-      const response = await axios.put(`/tournaments/${tournament._id}`,{tournament},{withCredentials:true})
+      const id = tournament._id
+      console.log(id)
+      const response = await axios.put(`/tournaments/${id}`,{tournament},{withCredentials:true})
       console.log(response)
       // No need to log 'tournaments' here.
     } catch (error) {
@@ -32,10 +34,11 @@ const MyTournamentsPage = () => {
   }
   
 
-  const handleDelete = async (tournamentId) => {
+  const handleDelete = async (id) => {
     try {
-      await axios.delete('/my-tournaments', { params: { tournament_id: tournamentId }, withCredentials: true });
-      setTournaments(tournaments.filter((tournament) => tournament._id !== tournamentId));
+      const res = await axios.delete(`/my-tournaments/${id}`, { withCredentials: true });
+      console.log(res)
+      setTournaments(tournaments.filter((tournament) => tournament._id !== id));
     } catch (error) {
       console.error('Error deleting tournament:', error);
     }

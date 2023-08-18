@@ -56,11 +56,17 @@ async function createTournament(req, res) {
   try {
     const token = req.cookies.Authorization;
     const decoded = jwt.verify(token, process.env.SECRET);
-    const { name, date, location, format, selectedTeams } = req.body;
-
+    const { name, date, location, format, selectedTeams,replace } = req.body;
+    console.log("start" + replace)
     // Check if a tournament with the same name already exists
     const existingTournament = await Tournament.findOne({ name });
-    if (existingTournament) {
+   
+    if(replace && existingTournament){
+      await existingTournament.deleteOne()
+    }
+
+    else if (existingTournament) {
+      
       return res.status(400).json({ error: 'Tournament name must be unique' });
     }
 
@@ -96,7 +102,7 @@ async function createTournament(req, res) {
     }
 
     // Save the groups with the assigned teams to the database
-    console.log(group1)
+    //console.log(group1)
     await group1.save();
     await group2.save();
 
@@ -107,12 +113,24 @@ async function createTournament(req, res) {
     const schedule = await createSchedulelocal(tournament,group1,group2)
     tournament.schedule = schedule
     await tournament.save()
-    console.log(tournament.schedule)
+    //console.log(tournament.schedule)
+    const simplifiedTournament = {
+      _id: tournament._id,
+      name: tournament.name,
+      date: tournament.date,
+      location: tournament.location,
+      format: tournament.format,
+      user: tournament.user,
+      teams: selectedTeams,
+      // Include other relevant properties
+    };
+
+    res.json(simplifiedTournament)
+
    
-    res.sendStatus(200);
   } catch (error) {
     console.log(error);
-    res.sendStatus(500);
+    res.sendStatus(500).json(s);
   }
 }
 
@@ -224,21 +242,12 @@ async function deleteTournament(req, res) {
     const token = req.cookies.Authorization;
     const decoded = jwt.verify(token, process.env.SECRET);
     //console.log(decoded);
-
-    const { tournament_id } = req.body;
-    const tournament = await Tournament.findOne(tournament_id);
-    console.log(tournament.user.toString())
-    console.log(decoded.sub)
-    if (tournament.user.toString() === decoded.sub) {
-
-      await Tournament.deleteOne({ tournament_id });
-      res.sendStatus(200);
-
-    }
-    // console.log(date);
-    else {
-      res.sendStatus(401)
-    }
+    console.log(req.params.id)
+    const { id } = req.params.id;
+    const tournament = await Tournament.findByIdAndDelete(req.params.id );
+    console.log(id)
+    //console.log(decoded.sub)
+    res.sendStatus(200)
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
@@ -263,11 +272,17 @@ async function updateTournament(req, res) {
     if (tournament.user.toString() !== decoded.sub) {
       return res.status(403).json({ message: "You are not authorized to update this tournament" });
     }
-    console.log(req.body.tournament)
+    //console.log(req.body.tournament)
+    if(req.body.finalised){
+      tournament.finalised = true;
+      await tournament.save()
+      res.sendStatus(200)
+      return;
+    }
     // Extract the updated tournament data from the request body
     const { name, date, location, format,teams,finalised } = req.body.tournament;
     const Teams = new Team([teams]);
-    console.log(teams )
+    //console.log(teams )
     // Check if a tournament with the updated name already exists
     const existingTournament = await Tournament.findOne({ name });
     if (existingTournament && existingTournament._id.toString() !== tournamentId) {

@@ -48,6 +48,7 @@ if (process.env.NODE_ENV != "production") {
   app.get("/tournaments",tournamentsController.getTournaments);
   app.put("/tournaments/:id",tournamentsController.updateTournament)
   app.get("/my-tournaments",tournamentsController.getTournamentsFromUser)
+  app.delete("/my-tournaments/:id",tournamentsController.deleteTournament)
   app.delete("/my-tournaments",tournamentsController.deleteTournament)
   app.post("/tournaments/simulate",tournamentsController.simulateTournament)
   app.get("/tournament/details/:id",tournamentsController.getTournamentDetails)

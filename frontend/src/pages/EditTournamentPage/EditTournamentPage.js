@@ -35,6 +35,7 @@ const EditTournamentPage = () => {
 
         const tournament = await axios.get(`/tournaments/${id}`, { withCredentials: true });
         const Allteams = await axios.get("/teams", { withCredentials: true });
+        if(tournament.data.schedule){
         const Schedule = await axios.get(`/schedule/${tournament.data.schedule}`)
 
         const game = await axios.get(`/game/${Schedule.data.final._id}`)
@@ -42,7 +43,7 @@ const EditTournamentPage = () => {
         //console.log(Schedule)
         // console.log(tournament)
         setSchedule(Schedule)
-
+        }
         setTeams(Allteams.data)
         //console.log(teams)
         const getteams = tournament.data.teams
@@ -54,7 +55,7 @@ const EditTournamentPage = () => {
         setSelectedTeams(getteams);
         setFinalised(tournament.data.finalised)
         // console.log(selectedTeams)
-        console.log(Schedule.data)
+       // console.log(Schedule.data)
       } catch (error) {
         console.error('Error fetching tournament:', error);
       }
@@ -87,8 +88,20 @@ const EditTournamentPage = () => {
         setValidationMessage("Date needs to be equal or greater than today");
         setSuccessMessage('');
       } else {
-        const response = await axios.put(`/tournaments/${id}`, { name, date, location, format, selectedTeams }, { withCredentials: true });
-        console.log('Tournament updated:', response.data);
+       
+        //const response = await axios.put(`/tournaments/${id}`, { name, date, location, format, teams:selectedTeams }, { withCredentials: true });
+       //const response = await axios.delete(`/my-tournaments/${id}`,{withCredentials:true})
+       //const response2 = await axios.post('/tournaments', { name, date, location, format, selectedTeams }, { withCredentials: true });
+       
+       const response3 = await axios.post('/tournaments', { name, date, location, format, selectedTeams,replace:true }, { withCredentials: true });
+       console.log(response3)
+       console.log("ASD")
+       if (response3.status === 200) {
+         
+       }
+       
+
+       console.log('Tournament updated:');
         setSuccessMessage('Tournament updated:');
         setValidationMessage('');
       }
@@ -220,8 +233,10 @@ const EditTournamentPage = () => {
           </TableContainer>
         </>
       )}
+
+      
       {/* Display the schedule */}
-      {schedule && (
+      {finalised && (
         <>
           <h2>Group 1</h2>
           {!schedule.data.group1[0].isFinished &&
@@ -259,7 +274,7 @@ const EditTournamentPage = () => {
           </TableContainer>
         </>
       )}
-      {schedule && (
+      {finalised && (
         <>
           <h2>Group 2</h2>
           {!schedule.data.group2[0].isFinished &&
@@ -298,7 +313,7 @@ const EditTournamentPage = () => {
         </>
       )}
 
-      {schedule && (
+      {finalised && (
         <>
           <h2>Raspored</h2>
           <TableContainer>
@@ -391,13 +406,15 @@ const EditTournamentPage = () => {
                     
                   </TableRow>
                 )}
-
+                      
 
               </TableBody>
             </Table>
           </TableContainer>
         </>
       )}
+
+      
 
     </Container>
   );
