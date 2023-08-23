@@ -16,6 +16,7 @@ import AdministrationPage from '../pages/AdministrationPage/AdministrationsPage'
 import EditTeamPage from '../pages/EditTeamPage/EditTeamPage';
 import EditPlayerPage from '../pages/EditPlayerPage/EditPlayerPage';
 import { EditGamePage } from '../pages/EditGamePage/EditGamePage';
+import './App.css'; // Add this line at the top
 
 axios.defaults.baseURL = 'http://localhost:3000/';
 

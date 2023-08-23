@@ -45,7 +45,7 @@ const MyTournamentsPage = () => {
   };
 
   return (
-    <Container style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '100px' }}>
+    <Container style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <TableContainer component={Paper} style={{ maxWidth: '900px' }}>
         <Table>
           <TableHead>

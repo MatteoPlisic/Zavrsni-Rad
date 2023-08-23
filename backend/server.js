@@ -68,9 +68,7 @@ if (process.env.NODE_ENV != "production") {
   app.get("/players/:id",playersController.getPlayerById)
   app.put("/players/:id",playersController.updatePlayer)
 
-
   //groups
-  
 app.get('/groups', groupsController.getAllGroups);
 app.post('/groups', groupsController.createGroup);
 app.delete('/groups/:id', groupsController.deleteGroup);
@@ -79,27 +77,16 @@ app.put('/groups/:id', groupsController.updateGroup);
 app.get('/finish-group/:id',groupsController.finishGroup)
 //schedule
 
-
 app.get("/schedule",schedulesController.getSchedules)
 app.post("/schedule",schedulesController.createSchedule)
 app.get("/schedule/:id",schedulesController.getScheduleById)
 app.get("/schedule-finals/:id",schedulesController.generateFinals)
 
-
-
 // Create a new game
 app.post('/game', gamesController.createGame);
-
-// Get all games
 app.get('/game', gamesController.getAllGames);
-
-// Get a single game by ID
 app.get('/game/:id', gamesController.getGameById);
-
-// Update a game by ID
 app.put('/game/:id', gamesController.updateGameById);
-
-// Delete a game by ID
 app.delete('/game/:id', gamesController.deleteGameById);
 
   // Start our server

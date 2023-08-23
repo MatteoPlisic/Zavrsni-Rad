@@ -16,15 +16,28 @@ const EditPlayerPage = () => {
     fetchPlayer();
   }, []);
 
+  const formatDate = (dateString) => {
+    const startDate = new Date(dateString);
+
+    const day = startDate.getDate().toString().padStart(2, '0');
+    const month = (startDate.getMonth() + 1).toString().padStart(2, '0');
+    const year = startDate.getFullYear();
+
+    return `${day}-${month}-${year}`;
+  };
+
   const fetchPlayer = async () => {
     try {
       const response = await axios.get(`/players/${id}`);
       setPlayer(response.data);
       setPlayerName(response.data.name);
+      
       setPlayerDateOfBirth(new Date(response.data.dateOfBirth).toISOString().split('T')[0]);
-      setSelectedTeam(response.data.team); // Set the selected team ID
-
+     setSelectedTeam(response.data.team); // Set the selected team ID
+     
+      //console.log((response.data.dateOfBirth))
       const res = await axios.get("/teams",{withCredentials:true})
+      console.log(res)
       setTeams(res.data)
     } catch (error) {
       console.error('Error fetching player:', error);
@@ -33,6 +46,7 @@ const EditPlayerPage = () => {
 
   const handleUpdatePlayer = async () => {
     try {
+      console.log(playerDateOfBirth)
       await axios.put(`/players/${id}`, {
         name: playerName,
         dateOfBirth: playerDateOfBirth,

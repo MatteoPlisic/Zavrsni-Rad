@@ -44,13 +44,13 @@ async function getPlayerById(req, res) {
 async function updatePlayer(req, res) {
   try {
     const playerId = req.params.id;
-    const { name, age, team } = req.body;
+    const { name, dateOfBirth, team } = req.body;
     const player = await Player.findById(playerId);
     if (!player) {
       return res.status(404).json({ error: 'Player not found' });
     }
     player.name = name;
-    player.age = age;
+    player.dateOfBirth = dateOfBirth;
     player.team = team;
     await player.save();
     res.json(player);

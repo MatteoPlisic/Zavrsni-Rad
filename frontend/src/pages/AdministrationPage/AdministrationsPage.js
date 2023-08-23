@@ -28,19 +28,36 @@ const AdministrationPage = () => {
     fetchPlayers();
   }, []);
 
-  // Fetch players and their teams
   async function fetchPlayers() {
     try {
       const response = await axios.get("/players", { withCredentials: true });
       setPlayers(response.data);
 
-      // ... (rest of the fetchPlayers logic)
+      // Fetch the team names for each player and store them in playerTeams state
+      const playerTeamPromises = response.data.map(async (player) => {
+        if (player.team) {
+          const teamName = await findTeamName(player.team);
+          return { playerId: player._id, teamName };
+        } else {
+          return { playerId: player._id, teamName: "No Team" };
+        }
+      });
+
+      // Wait for all team name promises to resolve
+      const playerTeamData = await Promise.all(playerTeamPromises);
+
+      // Convert the array of player teams into an object for easier lookup
+      const playerTeamObject = playerTeamData.reduce((acc, { playerId, teamName }) => {
+        acc[playerId] = teamName;
+        return acc;
+      }, {});
+
+      setPlayerTeams(playerTeamObject);
     } catch (error) {
       console.error('Error fetching players:', error);
     }
   }
 
-  // Fetch teams
   async function fetchTeams() {
     try {
       const response = await axios.get("/teams", { withCredentials: true });
@@ -50,21 +67,18 @@ const AdministrationPage = () => {
     }
   }
 
-  // Create a team
-  const createTeam = async (name) => {
+  const handleCreateTeam = async () => {
     try {
-      const res = await axios.post('/teams', { name },{withCredentials:true});
-      console.log(res);
-      console.log("Team created");
-      setTeamName('');
+     const res=    await axios.post('/teams', { name: teamName });
+     console.log(res)
+     setTeamName('');
       fetchTeams(); // Refresh the team list after creating a new team
     } catch (error) {
       console.error('Error creating team:', error);
     }
   };
 
-  // Delete a team
-  const deleteTeam = async (teamId) => {
+  const handleDeleteTeam = async (teamId) => {
     try {
       await axios.delete(`/teams/${teamId}`, { withCredentials: true });
       fetchTeams(); // Refresh the team list after deleting a team
@@ -73,7 +87,52 @@ const AdministrationPage = () => {
     }
   };
 
-  // ... (other functions)
+  const handleDeletePlayer = async (playerId) => {
+    try {
+      await axios.delete(`/players/${playerId}`, { withCredentials: true });
+      fetchPlayers(); // Refresh the player list after deleting a player
+    } catch (error) {
+      console.error('Error deleting player:', error);
+    }
+  };
+
+  const handleCreatePlayer = async () => {
+    try {
+      await axios.post('/players', {
+        name: playerName,
+        dateOfBirth: playerDateOfBirth,
+        team: selectedTeam, // Include the selected team ID in the player data
+      });
+      
+      setPlayerName('');
+      setPlayerDateOfBirth('');
+      setSelectedTeam(''); // Reset the selected team after creating the player
+      fetchPlayers(); // Refresh the player list after creating a new player
+    } catch (error) {
+      console.error('Error creating player:', error);
+    }
+  };
+
+  const calculateAge = (dateOfBirth) => {
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
+  async function findTeamName(id) {
+    try {
+      const response = await axios.get(`/teams/${id}`);
+      return response.data.name;
+    } catch (error) {
+      console.error('Error fetching team:', error);
+      return 'Unknown Team';
+    }
+  }
 
   return (
     <Box p={3} marginTop={"50px"}>
@@ -91,9 +150,9 @@ const AdministrationPage = () => {
           variant="outlined"
           size="small"
           fullWidth
-          margin="normal"
+          margin="dense"
         />
-        <Button variant="contained" color="primary" onClick={() => createTeam(teamName)}>
+        <Button variant="contained" color="primary" onClick={handleCreateTeam}>
           Create Team
         </Button>
       </Box>
@@ -117,7 +176,7 @@ const AdministrationPage = () => {
                 <Button
                   edge="end"
                   aria-label="delete"
-                  onClick={() => deleteTeam(team._id)}
+                  onClick={() => handleDeleteTeam(team._id)}
                 >
                   Delete
                 </Button>
@@ -126,7 +185,73 @@ const AdministrationPage = () => {
           ))}
         </List>
       </Box>
-      {/* ... (rest of the component) */}
+      <Box p={3} marginTop={"50px"}>
+        <Box mt={3}>
+          <Typography variant="h5">Create a New Player</Typography>
+          <TextField
+            label="Player Name"
+            value={playerName}
+            onChange={(e) => setPlayerName(e.target.value)}
+            variant="outlined"
+            size="small"
+            fullWidth
+            margin="dense"
+          />
+          <TextField
+            value={playerDateOfBirth}
+            onChange={(e) => setPlayerDateOfBirth(e.target.value)}
+            variant="outlined"
+            size="small"
+            fullWidth
+            margin="dense"
+            type="date"
+            placeholder=""
+          />
+          <Select
+            value={selectedTeam}
+            onChange={(e) => setSelectedTeam(e.target.value)}
+            variant="outlined"
+            size="small"
+            fullWidth
+            margin="dense"
+          >
+            <MenuItem value="">None</MenuItem>
+            {teams.map((team) => (
+              <MenuItem key={team._id} value={team._id}>
+                {team.name}
+              </MenuItem>
+            ))}
+          </Select>
+          <Button variant="contained" color="primary" onClick={handleCreatePlayer}>
+            Create Player
+          </Button>
+        </Box>
+
+        {/* Box for displaying players */}
+        <Box mt={3}>
+          <Typography variant="h5">All Players</Typography>
+          <List>
+            {players.map((player) => (
+              <ListItem key={player._id}>
+                <ListItemText
+                  primary={player.name}
+                  secondary={`Age: ${calculateAge(player.dateOfBirth)}`}
+                />
+                {/* Display the team name of the player */}
+                
+                <ListItemSecondaryAction>
+                  <Button component={Link} to={`/edit-player/${player._id}`} edge="end" aria-label="edit">
+                    Edit
+                  </Button>
+                  <Button onClick={() => handleDeletePlayer(player._id)} edge="end" aria-label="delete">
+                    Delete
+                  </Button>
+                </ListItemSecondaryAction>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+      </Box>
     </Box>
   );
 };

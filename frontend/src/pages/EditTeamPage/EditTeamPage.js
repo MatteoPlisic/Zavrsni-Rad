@@ -7,7 +7,7 @@ const EditTeamPage = () => {
   const { id } = useParams();
     const navigate = useNavigate('')
   const [teamName, setTeamName] = useState('');
-  const [loading, setLoading] = useState(false);
+ 
 
   useEffect(() => {
     fetchTeam();
@@ -15,27 +15,26 @@ const EditTeamPage = () => {
 
   const fetchTeam = async () => {
     try {
-      setLoading(true);
+     
       const response = await axios.get(`/teams/${id}`, { withCredentials: true });
       setTeamName(response.data.name);
       console.log(response.data.name)
-      setLoading(false);
+      
     } catch (error) {
       console.error('Error fetching team:', error);
-      setLoading(false);
+      
     }
   };
 
   const handleEditTeam = async () => {
     try {
-      setLoading(true);
+      
       const res=  await axios.put(`/teams/${id}`, { name: teamName });
-      console.log(res)
-      setLoading(false);
+      
       navigate('/administration'); // Redirect to the administration page after editing the team
     } catch (error) {
       console.error('Error editing team:', error);
-      setLoading(false);
+      
     }
   };
 
@@ -45,9 +44,7 @@ const EditTeamPage = () => {
         Edit Team
       </Typography>
 
-      {loading ? (
-        <Typography variant="body1">Loading...</Typography>
-      ) : (
+      
         <>
           <TextField
             label="Team Name"
@@ -62,7 +59,7 @@ const EditTeamPage = () => {
             Save Changes
           </Button>
         </>
-      )}
+      
     </Box>
   );
 };
