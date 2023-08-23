@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import axios from 'axios';
-import LoginPage from '../pages/LoginPage';
-import SignupPage from '../pages/SignupPage';
-import FrontPage from '../pages/FrontPage';
+import LoginPage from '../pages/LoginPage/LoginPage';
+import SignupPage from '../pages/SignupPage/SignupPage';
+import FrontPage from '../pages/FrontPage/FrontPage';
 import Navbar from './Navbar';
 
 import AllTournamentsPage from '../pages/AllTournaments/AllTournamentsPage';

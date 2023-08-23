@@ -3,7 +3,7 @@ import { AppBar,Button, Toolbar, IconButton, List, ListItem, ListItemText, Drawe
 import { styled } from '@mui/system';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import CheckAuth from '../components/CheckAuth';
+import CheckAuth from '../../components/CheckAuth';
 
 const FrontPageContainer = styled('div')({
   display: 'flex',
