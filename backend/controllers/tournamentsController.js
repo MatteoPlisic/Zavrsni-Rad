@@ -58,7 +58,7 @@ async function createTournament(req, res) {
     const decoded = jwt.verify(token, process.env.SECRET);
     const { name, date, location, format, selectedTeams,replace } = req.body;
     console.log("start" + replace)
-    // Check if a tournament with the same name already exists
+    
     const existingTournament = await Tournament.findOne({ name });
    
     if(replace && existingTournament){
@@ -80,16 +80,13 @@ async function createTournament(req, res) {
       schedule:null
     });
 
-    //console.log(tournament)
-    // Create two groups of four teams each
+   
     const group1 = new Group({ tournament: tournament, teams: [],teamScores:[] });
     const group2 = new Group({ tournament: tournament, teams: [],teamScores:[] });
 
-    // Save the groups to the database
-    await group1.save();
-    await group2.save();
+    
 
-    // Assign each team to one of the groups
+    
     const numTeams = selectedTeams.length;
     for (let i = 0; i < numTeams; i++) {
       if (i < numTeams / 2) {
@@ -101,19 +98,17 @@ async function createTournament(req, res) {
       }
     }
 
-    // Save the groups with the assigned teams to the database
-    //console.log(group1)
+   
     await group1.save();
     await group2.save();
 
   
 
-    // Create the tournament
 
     const schedule = await createSchedulelocal(tournament,group1,group2)
     tournament.schedule = schedule
     await tournament.save()
-    //console.log(tournament.schedule)
+  
     const simplifiedTournament = {
       _id: tournament._id,
       name: tournament.name,
@@ -122,7 +117,7 @@ async function createTournament(req, res) {
       format: tournament.format,
       user: tournament.user,
       teams: selectedTeams,
-      // Include other relevant properties
+     
     };
 
     res.json(simplifiedTournament)
@@ -138,14 +133,11 @@ async function createSchedulelocal(tournament, group1, group2 ) {
   try {
     
 
-    // Helper function to create a round-robin schedule for a given group
     const createRoundRobinSchedule = async (group,groupNumber) => {
       const games = [];
       const numTeams = group.teams.length;
 
-      new Date(group.tournament.date.getTime() + 2 * 24 * 60 * 60 * 1000)
-
-      const startDateX = new Date(group.tournament.date.getTime() +  24 * 60 * 60 * 1000) // Replace '2023-08-01' with your desired start date for group 1 games
+      const startDateX = new Date(group.tournament.date.getTime() +  24 * 60 * 60 * 1000) 
       const startDateY = new Date(group.tournament.date.getTime())
       let gameTime = 0
       let gameDay = 0
@@ -156,27 +148,26 @@ async function createSchedulelocal(tournament, group1, group2 ) {
           gameDay++;
           let startHour;
           if (gameTime === 0) {
-            startHour = groupNumber === 1 ? 10 : 12; // 10 am for group 1 and 12 pm for group 2 on the first day
+            startHour = groupNumber === 1 ? 10 : 12; 
           } else if (gameTime === 1) {
-            startHour = groupNumber === 1 ? 14 : 16; // 2 pm for group 1 and 4 pm for group 2 on the first day
+            startHour = groupNumber === 1 ? 14 : 16; 
           } else {
-            startHour = groupNumber === 1 ? 18 : 20; // 6 pm for group 1 and 8 pm for group 2 on the first day
+            startHour = groupNumber === 1 ? 18 : 20; 
           }
-    
-          // Set the start time for the game
+  
           startDate.setHours(startHour);
           const newGame = new Game({
             team1: group.teams[i],
             team2: group.teams[j],
             roundOf: "Group Stage",
-            tournament: group.tournament, // Use the group's tournament for the game
-            startDate, // Use the appropriate start date and time
+            tournament: group.tournament,
+            startDate,
             group: group,
           });
           await newGame.save();
           games.push(newGame._id);
           gameTime++;
-          // Increment the gameTime for the next iteration
+         
           if(gameTime === 3)
           gameTime = 0
         }
@@ -187,32 +178,30 @@ async function createSchedulelocal(tournament, group1, group2 ) {
    
     
 
-    // Create round-robin schedules for both groups
     const group1Games = await createRoundRobinSchedule(group1,1);
     const group2Games = await createRoundRobinSchedule(group2,2);
 
 
-    // Create the 3rd place game
+  
     const thirdPlaceGame = new Game({
-      team1: null, // Replace with the actual team ID
-      team2: null, // Replace with the actual team ID
+      team1: null, 
+      team2: null,
       roundOf: "3rd Place Game",
       tournament: tournament,
-     startDate: new Date(tournament.date.getTime() + 2 * 24 * 60 * 60 * 1000).setHours(18), // Replace this with the actual start date and time
+     startDate: new Date(tournament.date.getTime() + 2 * 24 * 60 * 60 * 1000).setHours(18),
     });
     await thirdPlaceGame.save();
 
     // Create the final game
     const finalGame = new Game({
-      team1: null, // Replace with the actual team ID
-      team2: null, // Replace with the actual team ID
+      team1: null,
+      team2: null,
       roundOf: "Final",
       tournament: tournament,
-      startDate: new Date(tournament.date.getTime() + 2 * 24 * 60 * 60 * 1000).setHours(20), // Replace this with the actual start date and time
+      startDate: new Date(tournament.date.getTime() + 2 * 24 * 60 * 60 * 1000).setHours(20),
     });
     await finalGame.save();
 
-    // Create the schedule with the group and game information
     const schedule = new Schedule({
       tournament,
       group1,
@@ -237,7 +226,7 @@ module.exports = {
   createTournament,
 };
 async function deleteTournament(req, res) {
-  try {
+  try {ee
     //console.log(req.cookies)
     const token = req.cookies.Authorization;
     const decoded = jwt.verify(token, process.env.SECRET);
