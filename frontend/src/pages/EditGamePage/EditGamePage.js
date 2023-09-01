@@ -63,7 +63,7 @@ export const EditGamePage = () => {
     <Grid container justifyContent="center" alignItems="center" style={{ minHeight: '100vh' }} marginTop={"50px"}>
       <Grid item xs={12} sm={6} md={4}>
         <div style={{ padding: '20px' }}>
-          <Typography variant="h5" align="center" gutterBottom>Edit Game Page</Typography>
+          <Typography variant="h5" align="center" gutterBottom></Typography>
           <Typography variant="body1" gutterBottom align="center">
             {team1Name}
           </Typography>
@@ -117,9 +117,9 @@ export const EditGamePage = () => {
             <Button variant="contained" color="primary" onClick={saveResult}>
               Save
             </Button>
-            <Button variant="contained" color="secondary">
-                Finish Game
-            </Button>
+           {/*<Button variant="contained" color="secondary">
+              //  Finish Game
+  //</Button>*/}
           </Grid>
         </div>
       </Grid>

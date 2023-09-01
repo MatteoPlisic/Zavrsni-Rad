@@ -38,33 +38,37 @@ const LoginButton = styled(Button)({
   },
 });
 
+const ErrorMessage = styled(Typography)({
+  color: 'red',
+});
+
 const LoginPage = ({ setIsLoggedIn, isLoggedIn }) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const refresh = useState('')
-  useEffect( () => {
-    async function checker(){
-    const res = await axios.get('/check-auth',{withCredentials:true})
-    
-    if(res.status === 200)
-    navigate('/')
+  const [errorMessage, setErrorMessage] = useState(''); // State for error message
+
+  useEffect(() => {
+    async function checker() {
+      const res = await axios.get('/check-auth', { withCredentials: true });
+
+      if (res.status === 200) navigate('/');
     }
 
-    checker()
-  },[]);
+    checker();
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res  = await axios.post('/login', { email, password }, { withCredentials: true });
-      console.log(res.cookie)
-      setIsLoggedIn(true); // Set isLoggedIn to true in the parent component (e.g., Navbar component)
+      const res = await axios.post('/login', { email, password }, { withCredentials: true });
+      console.log(res.cookie);
+      setIsLoggedIn(true);
       navigate('/');
-       window.location.reload();
-      
+      window.location.reload();
     } catch (err) {
       console.error(err);
+      setErrorMessage('Incorrect email or password'); // Set error message on unsuccessful login
     }
   };
 
@@ -90,6 +94,11 @@ const LoginPage = ({ setIsLoggedIn, isLoggedIn }) => {
         <LoginButton variant="contained" onClick={handleLogin}>
           Login
         </LoginButton>
+        {errorMessage && (
+          <ErrorMessage variant="body2" align="center">
+            {errorMessage}
+          </ErrorMessage>
+        )}
         <Typography variant="body2" align="center">
           Don't have an account? <Link to="/signup">Sign up</Link>
         </Typography>

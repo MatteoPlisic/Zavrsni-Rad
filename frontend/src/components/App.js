@@ -17,6 +17,7 @@ import EditTeamPage from '../pages/EditTeamPage/EditTeamPage';
 import EditPlayerPage from '../pages/EditPlayerPage/EditPlayerPage';
 import { EditGamePage } from '../pages/EditGamePage/EditGamePage';
 import './App.css'; // Add this line at the top
+import EditUserpage from '../pages/EditUserPage/EditUserPage';
 
 axios.defaults.baseURL = 'http://localhost:3000/';
 
@@ -44,6 +45,7 @@ function App() {
           <Route path='/edit-team/:id' element={<EditTeamPage/>}></Route>
           <Route path='/edit-player/:id' element={<EditPlayerPage/>}></Route>
           <Route path='/edit-game/:id' element ={<EditGamePage/>}></Route>
+          <Route path='/edit-user/:id' element ={<EditUserpage/>}></Route>
         </Routes>
       </BrowserRouter>
     </div>

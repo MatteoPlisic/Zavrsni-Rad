@@ -12,6 +12,8 @@ import {
   ListItemSecondaryAction,
   MenuItem,
   Select,
+  FormControlLabel,
+  Checkbox,
 } from '@mui/material';
 
 const AdministrationPage = () => {
@@ -22,11 +24,37 @@ const AdministrationPage = () => {
   const [playerName, setPlayerName] = useState('');
   const [playerDateOfBirth, setPlayerDateOfBirth] = useState('');
   const [playerTeams, setPlayerTeams] = useState({}); // State to store player teams
+  const [users, setUsers] = useState([]);
+  const [newUserName, setNewUserName] = useState('');
+  const [newUserEmail, setNewUserEmail] = useState('');
+  const [newUserPassword, setNewUserPassword] = useState('');
+  const [isSuperUser, setIsSuperUser] = useState(false);
 
   useEffect(() => {
     fetchTeams();
     fetchPlayers();
+    fetchUsers();
   }, []);
+
+  const handleCreateUser = async () => {
+    try {
+      await axios.post('/users',{
+        name: newUserName,
+        email: newUserEmail,
+        password: newUserPassword,
+        isSuperUser: isSuperUser, // Include the value of the superUser checkbox
+      },  { withCredentials: true });
+
+      setNewUserName('');
+      setNewUserEmail('');
+      setNewUserPassword('');
+      setIsSuperUser(false); // Reset the superUser checkbox
+      fetchUsers();
+    } catch (error) {
+      console.error('Error creating user:', error);
+    }
+  };
+
 
   async function fetchPlayers() {
     try {
@@ -133,6 +161,25 @@ const AdministrationPage = () => {
       return 'Unknown Team';
     }
   }
+
+  async function fetchUsers() {
+    try {
+      const response = await axios.get("/users", { withCredentials: true });
+      setUsers(response.data);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    }
+  }
+
+  const handleDeleteUser = async (userId) => {
+    console.log(userId)
+    try {
+      await axios.delete(`/users/${userId}`, { withCredentials: true });
+      fetchUsers(); // Refresh the user list after deleting a user
+    } catch (error) {
+      console.error('Error deleting user:', error);
+    }
+  };
 
   return (
     <Box p={3} marginTop={"50px"}>
@@ -251,6 +298,78 @@ const AdministrationPage = () => {
             ))}
           </List>
         </Box>
+      </Box>
+      <Box mt={3}>
+    <Typography variant="h5">Create a New User</Typography>
+    <TextField
+      label="Name"
+      value={newUserName}
+      onChange={(e) => setNewUserName(e.target.value)}
+      variant="outlined"
+      size="small"
+      fullWidth
+      margin="dense"
+    />
+    <TextField
+      label="Email"
+      value={newUserEmail}
+      onChange={(e) => setNewUserEmail(e.target.value)}
+      variant="outlined"
+      size="small"
+      fullWidth
+      margin="dense"
+    />
+    <TextField
+      label="Password"
+      value={newUserPassword}
+      onChange={(e) => setNewUserPassword(e.target.value)}
+      variant="outlined"
+      size="small"
+      fullWidth
+      margin="dense"
+      type="password"
+    />
+     <FormControlLabel
+      control={
+        <Checkbox
+          checked={isSuperUser}
+          onChange={(e) => setIsSuperUser(e.target.checked)}
+          color="primary"
+        />
+      }
+      label="Super User"
+      />
+      <br></br>
+    <Button variant="contained" color="primary" onClick={handleCreateUser}>
+      Create User
+    </Button>
+  </Box>
+      <Box mt={3}>
+        <Typography variant="h5">All Users</Typography>
+        <List>
+          {users.map((user) => (
+            <ListItem key={user._id}>
+              <ListItemText primary={user.name} secondary={`Email: ${user.email}`} />
+              <ListItemSecondaryAction>
+                <Button
+                  component={Link}
+                  to={`/edit-user/${user._id}`}
+                  edge="end"
+                  aria-label="edit"
+                >
+                  Edit
+                </Button>
+                <Button
+                  edge="end"
+                  aria-label="delete"
+                  onClick={() => handleDeleteUser(user._id)}
+                >
+                  Delete
+                </Button>
+              </ListItemSecondaryAction>
+            </ListItem>
+          ))}
+        </List>
       </Box>
     </Box>
   );

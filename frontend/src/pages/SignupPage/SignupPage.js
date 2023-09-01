@@ -40,17 +40,17 @@ const SignupButton = styled(Button)({
 
 const SignupPage = () => {
   const navigate = useNavigate();
-  useEffect( () => {
-    async function checker(){
-    const res = await axios.get('/check-auth',{withCredentials:true})
-    
-    if(res.status === 200)
-    navigate('/')
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    async function checker() {
+      const res = await axios.get('/check-auth', { withCredentials: true });
+
+      if (res.status === 200) navigate('/');
     }
 
-    checker()
-  },[]);
-
+    checker();
+  }, []);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -67,22 +67,38 @@ const SignupPage = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log(formData)
 
+    // Validation logic
+    if (!formData.name || !formData.email || !formData.password) {
+      setError('All fields are required');
+      return;
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(formData.email)) {
+      setError('Invalid email address');
+      return;
+    }
+
+    if (formData.password.length < 8) {
+      setError('Password must be at least 8 characters long');
+      return;
+    }
+    
     axios
       .post('/signup', formData)
       .then((response) => {
-        console.log(response.data); // handle successful response
+        console.log(response.data);
+        navigate('/');
       })
       .catch((error) => {
-        console.error(error); // handle error
+        console.error(error);
+        setError('Email already in use');
       });
-
-      navigate('/')
   };
 
   return (
-    <SignupPageContainer>
+    <SignupPageContainer style={{height:"300px"}}>
       <SignupFormContainer>
         <Title>Sign up</Title>
         <TextField
@@ -114,6 +130,11 @@ const SignupPage = () => {
         <SignupButton variant="contained" onClick={handleSubmit}>
           Sign up
         </SignupButton>
+        {error && (
+          <Typography variant="body2" color="error" align="center">
+            {error}
+          </Typography>
+        )}
         <Typography variant="body2" align="center">
           Already have an account? <Link to="/login">Log in</Link>
         </Typography>

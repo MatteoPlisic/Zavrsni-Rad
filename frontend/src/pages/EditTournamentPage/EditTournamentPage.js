@@ -36,14 +36,14 @@ const EditTournamentPage = () => {
 
         const tournament = await axios.get(`/tournaments/${id}`, { withCredentials: true });
         const Allteams = await axios.get("/teams", { withCredentials: true });
-        if(tournament.data.schedule){
-        const Schedule = await axios.get(`/schedule/${tournament.data.schedule}`)
+        if (tournament.data.schedule) {
+          const Schedule = await axios.get(`/schedule/${tournament.data.schedule}`)
 
-        const game = await axios.get(`/game/${Schedule.data.final._id}`)
-        //console.log(game)
-        //console.log(Schedule)
-        // console.log(tournament)
-        setSchedule(Schedule)
+          const game = await axios.get(`/game/${Schedule.data.final._id}`)
+          //console.log(game)
+          //console.log(Schedule)
+          // console.log(tournament)
+          setSchedule(Schedule)
         }
         setTeams(Allteams.data)
         //console.log(teams)
@@ -56,7 +56,7 @@ const EditTournamentPage = () => {
         setSelectedTeams(getteams);
         setFinalised(tournament.data.finalised)
         // console.log(selectedTeams)
-       // console.log(Schedule.data)
+        // console.log(Schedule.data)
       } catch (error) {
         console.error('Error fetching tournament:', error);
       }
@@ -89,24 +89,24 @@ const EditTournamentPage = () => {
         setValidationMessage("Date needs to be equal or greater than today");
         setSuccessMessage('');
       } else {
-       
-        //const response = await axios.put(`/tournaments/${id}`, { name, date, location, format, teams:selectedTeams }, { withCredentials: true });
-       //const response = await axios.delete(`/my-tournaments/${id}`,{withCredentials:true})
-       //const response2 = await axios.post('/tournaments', { name, date, location, format, selectedTeams }, { withCredentials: true });
-       
-       const response3 = await axios.post('/tournaments', { name, date, location, format, selectedTeams,replace:true }, { withCredentials: true });
-       console.log(response3)
-       console.log("ASD")
-       if (response3.status === 200) {
-         
-       }
-       
 
-       console.log('Tournament updated:');
+        //const response = await axios.put(`/tournaments/${id}`, { name, date, location, format, teams:selectedTeams }, { withCredentials: true });
+        //const response = await axios.delete(`/my-tournaments/${id}`,{withCredentials:true})
+        //const response2 = await axios.post('/tournaments', { name, date, location, format, selectedTeams }, { withCredentials: true });
+
+        const response3 = await axios.post('/tournaments', { name, date, location, format, selectedTeams, replace: true }, { withCredentials: true });
+        console.log(response3)
+        console.log("ASD")
+        if (response3.status === 200) {
+
+        }
+
+
+        console.log('Tournament updated:');
         setSuccessMessage('Tournament updated:');
-      
+
         setValidationMessage('');
-        const response = await axios.delete(`/my-tournaments/${id}`,{withCredentials:true})
+        const response = await axios.delete(`/my-tournaments/${id}`, { withCredentials: true })
         navigate('/my-tournaments')
       }
     } catch (error) {
@@ -238,187 +238,194 @@ const EditTournamentPage = () => {
         </>
       )}
 
-      
-      {/* Display the schedule */}
-      {finalised && (
-        <>
-          <h2>Group 1</h2>
-          {!schedule.data.group1[0].isFinished &&
-            <Button onClick={() => endGroup(schedule.data.group1[0]._id)}>
-              End Group
-            </Button>}
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Team</TableCell>
-                  <TableCell>Goals Differential</TableCell>
-                  <TableCell>Points</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {schedule.data.group1[0].teamScores.sort((a, b) => {
-                  if (b.points !== a.points) {
-                    return b.points - a.points; // Sort by points in descending order
-                  } else {
-                    return b.goalsScored - a.goalsScored; // If points are equal, sort by goalsScored in descending order
-                  }
-                })
-                  .slice() // Create a copy of the array to avoid modifying the original array
-                  .sort((a, b) => b.points - a.points) // Sort the array by points in descending order
-                  .map((teamScore) => (
-                    <TableRow key={teamScore._id}>
-                      <TableCell>{teamScore.team.name}</TableCell>
-                      <TableCell>{teamScore.goalsScored}</TableCell>
-                      <TableCell>{teamScore.points}</TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </>
-      )}
-      {finalised && (
-        <>
-          <h2>Group 2</h2>
-          {!schedule.data.group2[0].isFinished &&
-            <Button onClick={() => endGroup(schedule.data.group2[0]._id)}>
-              End Group
-            </Button>}
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Team</TableCell>
-                  <TableCell>Goals Differential</TableCell>
-                  <TableCell>Points</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {schedule.data.group2[0].teamScores.sort((a, b) => {
-                  if (b.points !== a.points) {
-                    return b.points - a.points; // Sort by points in descending order
-                  } else {
-                    return b.goalsScored - a.goalsScored; // If points are equal, sort by goalsScored in descending order
-                  }
-                })
-                  .slice() // Create a copy of the array to avoid modifying the original array
-                  .sort((a, b) => b.points - a.points) // Sort the array by points in descending order
-                  .map((teamScore) => (
-                    <TableRow key={teamScore._id}>
-                      <TableCell>{teamScore.team.name}</TableCell>
-                      <TableCell>{teamScore.goalsScored}</TableCell>
-                      <TableCell>{teamScore.points}</TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </>
-      )}
+      <Container style={{ maxWidth: "100%", marginTop: "50px" }}>
+        {/* Display the schedule */}
+        {finalised && (
+          <>
+            <h2>Group 1</h2>
+            {!schedule.data.group1[0].isFinished &&
+              <Button onClick={() => endGroup(schedule.data.group1[0]._id)}>
+                End Group
+              </Button>}
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Team</TableCell>
+                    <TableCell>Goals Differential</TableCell>
+                    <TableCell>Points</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {schedule.data.group1[0].teamScores.sort((a, b) => {
+                    if (b.points !== a.points) {
+                      return b.points - a.points; // Sort by points in descending order
+                    } else {
+                      return b.goalsScored - a.goalsScored; // If points are equal, sort by goalsScored in descending order
+                    }
+                  })
+                    .slice() // Create a copy of the array to avoid modifying the original array
+                    .sort((a, b) => b.points - a.points) // Sort the array by points in descending order
+                    .map((teamScore) => (
+                      <TableRow key={teamScore._id}>
+                        <TableCell>{teamScore.team.name}</TableCell>
+                        <TableCell>{teamScore.goalsScored}</TableCell>
+                        <TableCell>{teamScore.points}</TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </>
+        )}
+        {finalised && (
+          <>
+            <h2>Group 2</h2>
+            {!schedule.data.group2[0].isFinished &&
+              <Button onClick={() => endGroup(schedule.data.group2[0]._id)}>
+                End Group
+              </Button>}
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Team</TableCell>
+                    <TableCell>Goals Differential</TableCell>
+                    <TableCell>Points</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {schedule.data.group2[0].teamScores.sort((a, b) => {
+                    if (b.points !== a.points) {
+                      return b.points - a.points; // Sort by points in descending order
+                    } else {
+                      return b.goalsScored - a.goalsScored; // If points are equal, sort by goalsScored in descending order
+                    }
+                  })
+                    .slice() // Create a copy of the array to avoid modifying the original array
+                    .sort((a, b) => b.points - a.points) // Sort the array by points in descending order
+                    .map((teamScore) => (
+                      <TableRow key={teamScore._id}>
+                        <TableCell>{teamScore.team.name}</TableCell>
+                        <TableCell>{teamScore.goalsScored}</TableCell>
+                        <TableCell>{teamScore.points}</TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </>
+        )}
 
-      {finalised && (
-        <>
-          <h2>Raspored</h2>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Phase</TableCell>
-                  <TableCell>team1</TableCell>
-                  <TableCell>team2</TableCell>
-                  <TableCell>Date</TableCell>
-                  <TableCell>Result</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {[...schedule.data.group1Games, ...schedule.data.group2Games]
-                  .sort((game1, game2) => new Date(game1.startDate) - new Date(game2.startDate))
-                  .map((game) => (
-                    <TableRow key={game._id}>
-                      <TableCell>{game.roundOf}</TableCell>
-                      <TableCell>{game.team1.name}</TableCell>
-                      <TableCell>{game.team2.name}</TableCell>
-                      <TableCell>{formatDate(game.startDate)} at {formatTime(game.startDate)}</TableCell>
+        {finalised && (
+          <>
+            <h2>Raspored</h2>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Phase</TableCell>
+                    <TableCell>team1</TableCell>
+                    <TableCell>team2</TableCell>
+                    <TableCell>Date</TableCell>
+                    <TableCell>Result</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {[...schedule.data.group1Games, ...schedule.data.group2Games]
+                    .sort((game1, game2) => new Date(game1.startDate) - new Date(game2.startDate))
+                    .map((game) => (
+                      <TableRow key={game._id}>
+                        <TableCell>{game.roundOf}</TableCell>
+                        <TableCell>{game.team1.name}</TableCell>
+                        <TableCell>{game.team2.name}</TableCell>
+                        <TableCell>{formatDate(game.startDate)} at {formatTime(game.startDate)}</TableCell>
+                        <TableCell>
+                          {(game.team1Score > -1 && game.team2Score > -1) ? `${game.team1Score} - ${game.team2Score}` :
+                            <Button component={Link} to={`/edit-game/${game._id}`}>
+                              Edit
+                            </Button>
+                          }
+                        </TableCell>
+                      </TableRow>
+                    ))}
+
+
+
+                  {schedule.data.thirdPlaceGame && (
+                    <TableRow key={schedule.data.thirdPlaceGame._id}>
+                      <TableCell>{schedule.data.thirdPlaceGame.roundOf}</TableCell>
                       <TableCell>
-                        {(game.team1Score > -1 && game.team2Score > -1) ? `${game.team1Score} - ${game.team2Score}` :
-                          <Button component={Link} to={`/edit-game/${game._id}`}>
-                            Edit
-                          </Button>
+                        {schedule.data.thirdPlaceGame.team1 && schedule.data.thirdPlaceGame.team1.name
+                          ? schedule.data.thirdPlaceGame.team1.name
+                          : "To be determined"}
+                      </TableCell>
+                      <TableCell>
+                        {schedule.data.thirdPlaceGame.team2 && schedule.data.thirdPlaceGame.team2.name
+                          ? schedule.data.thirdPlaceGame.team2.name
+                          : "To be determined"}
+                      </TableCell>
+                      <TableCell>
+                        {schedule.data.thirdPlaceGame.startDate
+                          ? formatDate(schedule.data.thirdPlaceGame.startDate) + " at " + formatTime(schedule.data.thirdPlaceGame.startDate)
+                          : "To be determined"}
+                      </TableCell>
+                      <TableCell>
+                        {schedule.data.thirdPlaceGame.team1Score > -1 && schedule.data.thirdPlaceGame.team2Score > -1
+                          ? `${schedule.data.thirdPlaceGame.team1Score} - ${schedule.data.thirdPlaceGame.team2Score}`
+                          : schedule.data.thirdPlaceGame.team1 ? 
+                            <Button component={Link} to={`/edit-game/${schedule.data.thirdPlaceGame._id}`}>
+                              Edit
+                            </Button> : null
+                          
                         }
                       </TableCell>
+
                     </TableRow>
-                  ))}
 
 
+                  )}
+                  {schedule.data.final && (
+                    <TableRow key={schedule.data.final._id}>
+                      <TableCell>{schedule.data.final.roundOf}</TableCell>
+                      <TableCell>
+                        {schedule.data.final.team1 && schedule.data.final.team1.name
+                          ? schedule.data.final.team1.name
+                          : "To be determined"}
+                      </TableCell>
+                      <TableCell>
+                        {schedule.data.final.team2 && schedule.data.final.team2.name
+                          ? schedule.data.final.team2.name
+                          : "To be determined"}
+                      </TableCell>
+                      <TableCell>
+                        {schedule.data.final.startDate
+                          ? formatDate(schedule.data.final.startDate) + " at " + formatTime(schedule.data.final.startDate)
+                          : "To be determined"}
+                      </TableCell>
 
-                {schedule.data.thirdPlaceGame && (
-                  <TableRow key={schedule.data.thirdPlaceGame._id}>
-                    <TableCell>{schedule.data.thirdPlaceGame.roundOf}</TableCell>
-                    <TableCell>
-                      {schedule.data.thirdPlaceGame.team1 && schedule.data.thirdPlaceGame.team1.name
-                        ? schedule.data.thirdPlaceGame.team1.name
-                        : "To be determined"}
-                    </TableCell>
-                    <TableCell>
-                      {schedule.data.thirdPlaceGame.team2 && schedule.data.thirdPlaceGame.team2.name
-                        ? schedule.data.thirdPlaceGame.team2.name
-                        : "To be determined"}
-                    </TableCell>
-                    <TableCell>
-                      {schedule.data.thirdPlaceGame.startDate
-                        ? formatDate(schedule.data.thirdPlaceGame.startDate) + " at " + formatTime(schedule.data.thirdPlaceGame.startDate)
-                        : "To be determined"}
-                    </TableCell>
-                    <TableCell>
-                        {(schedule.data.thirdPlaceGame.team1Score > -1 && schedule.data.thirdPlaceGame.team2Score > -1) ? `${schedule.data.thirdPlaceGame.team1Score} - ${schedule.data.thirdPlaceGame.team2Score}` :
-                          <Button component={Link} to={`/edit-game/${schedule.data.thirdPlaceGame._id}`}>
-                            Edit
-                          </Button>
+                      <TableCell>
+                        {schedule.data.final.team1Score > -1 && schedule.data.final.team2Score > -1
+                          ? `${schedule.data.final.team1Score} - ${schedule.data.final.team2Score}`
+                          : schedule.data.final.team1
+                            ? <Button component={Link} to={`/edit-game/${schedule.data.final._id}`}>
+                              Edit
+                            </Button>
+                            : null
                         }
                       </TableCell>
-                  </TableRow>
+
+                    </TableRow>
+                  )}
 
 
-                )}
-                {schedule.data.final && (
-                  <TableRow key={schedule.data.final._id}>
-                    <TableCell>{schedule.data.final.roundOf}</TableCell>
-                    <TableCell>
-                      {schedule.data.final.team1 && schedule.data.final.team1.name
-                        ? schedule.data.final.team1.name
-                        : "To be determined"}
-                    </TableCell>
-                    <TableCell>
-                      {schedule.data.final.team2 && schedule.data.final.team2.name
-                        ? schedule.data.final.team2.name
-                        : "To be determined"}
-                    </TableCell>
-                    <TableCell>
-                      {schedule.data.final.startDate
-                        ? formatDate(schedule.data.final.startDate) + " at " + formatTime(schedule.data.final.startDate)
-                        : "To be determined"}
-                    </TableCell>
-                    
-                    <TableCell>
-                        {(schedule.data.final.team1Score > -1 && schedule.data.final.team2Score > -1) ? `${schedule.data.final.team1Score} - ${schedule.data.final.team2Score}` :
-                          <Button component={Link} to={`/edit-game/${schedule.data.final._id}`}>
-                            Edit
-                          </Button>
-                        }
-                      </TableCell>
-                    
-                  </TableRow>
-                )}
-                      
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </>
+        )}
+      </Container>
 
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </>
-      )}
-
-      
 
     </Container>
   );

@@ -89,12 +89,148 @@ function checkAuth(req, res) {
   }
 }
 
+async function createUser(req, res) {
+  try {
 
+      const token = req.cookies.Authorization;
+      const decoded = jwt.verify(token, process.env.SECRET);
+      console.log(decoded)
+      const admin = await User.findById(decoded.sub)
+      console.log(admin)
+      if (!admin.superUser)
+        res.sendStatus(401)
+
+    const { name, email, password, superUser } = req.body;
+    const hashedPassword = bcrypt.hashSync(password, 8);
+    const user = await User.create({ name, email, password: hashedPassword, superUser });
+    res.status(201).json(user);
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(400);
+  }
+}
+
+async function getUsers(req, res) {
+  try {
+      const token = req.cookies.Authorization;
+      const decoded = jwt.verify(token, process.env.SECRET);
+      console.log(decoded)
+      const admin = await User.findById(decoded.sub)
+      console.log(admin)
+      if (!admin.superUser){
+        res.sendStatus(401)
+        return;
+      }
+      
+    const users = await User.find();
+    res.json(users);
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(400);
+  }
+}
+
+async function getUserById(req, res) {
+  try {
+    const token = req.cookies.Authorization;
+    const decoded = jwt.verify(token, process.env.SECRET);
+    console.log(decoded)
+    const admin = await User.findById(decoded.sub)
+    console.log(admin)
+    if (!admin.superUser){
+      res.sendStatus(401)
+      return;
+    }
+    const userId = req.params.id;
+    console.log("id "+ req.params.id)
+    const user = await User.findById(req.params.id);
+    if (!user) return res.sendStatus(404);
+    res.json(user);
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(400);
+  }
+}
+
+async function updateUser(req, res) {
+  try {
+    const token = req.cookies.Authorization;
+    const decoded = jwt.verify(token, process.env.SECRET);
+    console.log(decoded)
+    const admin = await User.findById(decoded.sub)
+    console.log(admin)
+    if (!admin.superUser){
+      res.sendStatus(401)
+      return;
+    }
+    const userId = req.params.id;
+    const { name, email, password, superUser, ...otherAttributes } = req.body;
+    const user = await User.findById(userId);
+    if(name !== null){
+      user.name = name;
+    }
+
+    if(password !== null){
+      user.password = password;
+    }
+
+
+    if(email !== null){
+      user.email = email;
+    }
+
+
+    if(superUser !== null){
+      user.superUser = superUser;
+    }
+
+   user.save()
+
+    if (!user) return res.sendStatus(404);
+    res.json(user);
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(400);
+  }
+}
+
+async function deleteUser(req, res) {
+  try {
+    const token = req.cookies.Authorization;
+    const decoded = jwt.verify(token, process.env.SECRET);
+    console.log(decoded)
+    const admin = await User.findById(decoded.sub)
+    console.log(admin)
+    if (!admin.superUser){
+      res.sendStatus(401)
+      return;
+    }
+    const userId = req.params.id;
+    const user = await User.findByIdAndDelete(userId);
+    
+    if (!user) return res.sendStatus(404);
+    user.deleteOne();
+    res.sendStatus(204);
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(400);
+  }
+}
 
 module.exports = {
   checkSuperUser,
   signup,
   login,
   logout,
-  checkAuth
+  checkAuth,
+ 
+  createUser,
+  getUsers,
+  getUserById,
+  updateUser,
+  deleteUser
 };
+
+
+
+
