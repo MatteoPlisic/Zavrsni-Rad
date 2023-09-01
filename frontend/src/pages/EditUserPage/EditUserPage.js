@@ -29,7 +29,8 @@ const EditUserpage = () => {
       const userData = response.data;
       setUserName(userData.name);
       setUserEmail(userData.email);
-      setIsSuperUser(userData.isSuperUser)
+      setIsSuperUser(userData.superUser)
+      setUserPassword(userData.password)
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
@@ -38,7 +39,7 @@ const EditUserpage = () => {
   const handleUpdateSuperUser = async () => {
     try {
       await axios.put(`/users/${id}`, {
-        isSuperUser: isSuperUser,
+        superUser: isSuperUser,
         name: null,
         email: null,
         password: null,
@@ -56,7 +57,7 @@ const EditUserpage = () => {
         name: userName,
         email: null,
         password: null,
-        isSuperUser: null,
+        SuperUser: null,
       }, { withCredentials: true });
 
       navigate('/administration')
@@ -71,7 +72,7 @@ const EditUserpage = () => {
         email: userEmail,
         name: null,
         password: null,
-        isSuperUser: null,
+        SuperUser: null,
       }, { withCredentials: true });
 
       navigate('/administration')
@@ -86,7 +87,7 @@ const EditUserpage = () => {
         password: userPassword,
         name: null,
         email: null,
-        isSuperUser: null,
+        SuperUser: null,
       }, { withCredentials: true });
 
       navigate('/administration')
@@ -146,14 +147,18 @@ const EditUserpage = () => {
           Update Password
         </Button>
       </Box>
+
       <Box mt={3}>
+      <Typography variant="h6" gutterBottom>
+          Admin Privileges
+        </Typography>
         <Checkbox
           checked={isSuperUser}
           onChange={(e) => setIsSuperUser(e.target.checked)}
           color="primary"
         />
         <Button variant="contained" color="primary" onClick={handleUpdateSuperUser}>
-          Update Superuser
+          Update admin privileges
         </Button>
       </Box>
     </Box>

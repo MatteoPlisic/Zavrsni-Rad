@@ -29,28 +29,61 @@ const AdministrationPage = () => {
   const [newUserEmail, setNewUserEmail] = useState('');
   const [newUserPassword, setNewUserPassword] = useState('');
   const [isSuperUser, setIsSuperUser] = useState(false);
+  const [teamCreationSuccess, setTeamCreationSuccess] = useState('');
+  const [teamNameError, setTeamNameError] = useState('');
+  const [playerCreationSuccess, setPlayerCreationSuccess] = useState('');
+  const [playerCreationError, setPlayerCreationError] = useState('');
+  const [userCreationSuccess, setUserCreationSuccess] = useState('');
+  const [userCreationError, setUserCreationError] = useState('');
 
   useEffect(() => {
     fetchTeams();
     fetchPlayers();
     fetchUsers();
-  }, []);
+  },[]);
 
   const handleCreateUser = async () => {
+    // Check if any field is left blank
+    if (!newUserName.trim() || !newUserEmail.trim() || !newUserPassword.trim()) {
+      setUserCreationError('All fields are required');
+      return; // Exit the function to prevent creating the user
+    }
+  
+    // Check if the email is in a valid format
+    const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    if (!emailRegex.test(newUserEmail)) {
+      setUserCreationError('Invalid email format');
+      return; // Exit the function to prevent creating the user
+    }
+  
+    // Check if the password is at least 8 characters long
+    if (newUserPassword.length < 8) {
+      setUserCreationError('Password must be at least 8 characters long');
+      return; // Exit the function to prevent creating the user
+    }
+  
     try {
-      await axios.post('/users',{
+      await axios.post('/users', {
         name: newUserName,
         email: newUserEmail,
         password: newUserPassword,
-        isSuperUser: isSuperUser, // Include the value of the superUser checkbox
-      },  { withCredentials: true });
-
+        isSuperUser: isSuperUser,
+      }, { withCredentials: true });
+  
       setNewUserName('');
       setNewUserEmail('');
       setNewUserPassword('');
-      setIsSuperUser(false); // Reset the superUser checkbox
+      setIsSuperUser(false);
+      setUserCreationError(''); // Clear the error message
+      setUserCreationSuccess('User created successfully'); // Set the success message
       fetchUsers();
+  
+      // Clear the success message after a few seconds (optional)
+      setTimeout(() => {
+        setUserCreationSuccess('');
+      }, 3000); // Clear the success message after 3 seconds
     } catch (error) {
+      setUserCreationError('Email is already in use');
       console.error('Error creating user:', error);
     }
   };
@@ -96,11 +129,24 @@ const AdministrationPage = () => {
   }
 
   const handleCreateTeam = async () => {
+    // Check if the team name is empty and show a validation message if it is
+    if (!teamName.trim()) {
+      setTeamNameError('Team name is required');
+      return; // Exit the function to prevent creating the team
+    }
+
     try {
-     const res=    await axios.post('/teams', { name: teamName });
-     console.log(res)
-     setTeamName('');
-      fetchTeams(); // Refresh the team list after creating a new team
+      const res = await axios.post('/teams', { name: teamName }, { withCredentials: true });
+      console.log(res);
+      setTeamName('');
+      setTeamNameError(''); // Clear the validation message
+      setTeamCreationSuccess('Team created successfully'); // Set the success message
+      fetchTeams();
+
+      // Clear the success message after a few seconds (optional)
+      setTimeout(() => {
+        setTeamCreationSuccess('');
+      }, 3000); // Clear the success message after 3 seconds
     } catch (error) {
       console.error('Error creating team:', error);
     }
@@ -125,17 +171,38 @@ const AdministrationPage = () => {
   };
 
   const handleCreatePlayer = async () => {
+    // Check if any field is left blank
+    if (!playerName.trim() || !playerDateOfBirth || !selectedTeam) {
+      setPlayerCreationError('All fields are required');
+      return; // Exit the function to prevent creating the player
+    }
+
+    // Check if the date is today or later
+    const today = new Date();
+    const selectedDate = new Date(playerDateOfBirth);
+    if (selectedDate >= today) {
+      setPlayerCreationError('Invalid date. Please select a date in the past.');
+      return; // Exit the function to prevent creating the player
+    }
+
     try {
       await axios.post('/players', {
         name: playerName,
         dateOfBirth: playerDateOfBirth,
         team: selectedTeam, // Include the selected team ID in the player data
       });
-      
+
       setPlayerName('');
       setPlayerDateOfBirth('');
-      setSelectedTeam(''); // Reset the selected team after creating the player
-      fetchPlayers(); // Refresh the player list after creating a new player
+      setSelectedTeam('');
+      setPlayerCreationError(''); // Clear the error message
+      setPlayerCreationSuccess('Player created successfully'); // Set the success message
+      fetchPlayers();
+
+      // Clear the success message after a few seconds (optional)
+      setTimeout(() => {
+        setPlayerCreationSuccess('');
+      }, 3000); // Clear the success message after 3 seconds
     } catch (error) {
       console.error('Error creating player:', error);
     }
@@ -202,6 +269,16 @@ const AdministrationPage = () => {
         <Button variant="contained" color="primary" onClick={handleCreateTeam}>
           Create Team
         </Button>
+        {teamNameError && (
+          <Typography variant="body2" color="error">
+            {teamNameError}
+          </Typography>
+        )}
+        {teamCreationSuccess && (
+          <Typography variant="body2" color="success">
+            {teamCreationSuccess && <p style={{ color: 'green' }}>{teamCreationSuccess}</p>}
+          </Typography>
+        )}
       </Box>
 
       {/* List of all teams with options to edit or delete */}
@@ -272,6 +349,19 @@ const AdministrationPage = () => {
           <Button variant="contained" color="primary" onClick={handleCreatePlayer}>
             Create Player
           </Button>
+          {playerCreationError && (
+            <Typography variant="body2" color="error">
+              {playerCreationError}
+            </Typography>
+          )}
+
+
+          <Typography variant="body2" color="green">
+            {playerCreationSuccess}
+          </Typography>
+
+
+
         </Box>
 
         {/* Box for displaying players */}
@@ -285,7 +375,7 @@ const AdministrationPage = () => {
                   secondary={`Age: ${calculateAge(player.dateOfBirth)}`}
                 />
                 {/* Display the team name of the player */}
-                
+
                 <ListItemSecondaryAction>
                   <Button component={Link} to={`/edit-player/${player._id}`} edge="end" aria-label="edit">
                     Edit
@@ -300,50 +390,60 @@ const AdministrationPage = () => {
         </Box>
       </Box>
       <Box mt={3}>
-    <Typography variant="h5">Create a New User</Typography>
-    <TextField
-      label="Name"
-      value={newUserName}
-      onChange={(e) => setNewUserName(e.target.value)}
-      variant="outlined"
-      size="small"
-      fullWidth
-      margin="dense"
-    />
-    <TextField
-      label="Email"
-      value={newUserEmail}
-      onChange={(e) => setNewUserEmail(e.target.value)}
-      variant="outlined"
-      size="small"
-      fullWidth
-      margin="dense"
-    />
-    <TextField
-      label="Password"
-      value={newUserPassword}
-      onChange={(e) => setNewUserPassword(e.target.value)}
-      variant="outlined"
-      size="small"
-      fullWidth
-      margin="dense"
-      type="password"
-    />
-     <FormControlLabel
-      control={
-        <Checkbox
-          checked={isSuperUser}
-          onChange={(e) => setIsSuperUser(e.target.checked)}
-          color="primary"
+        <Typography variant="h5">Create a New User</Typography>
+        <TextField
+          label="Name"
+          value={newUserName}
+          onChange={(e) => setNewUserName(e.target.value)}
+          variant="outlined"
+          size="small"
+          fullWidth
+          margin="dense"
         />
-      }
-      label="Super User"
-      />
-      <br></br>
-    <Button variant="contained" color="primary" onClick={handleCreateUser}>
-      Create User
-    </Button>
-  </Box>
+        <TextField
+          label="Email"
+          value={newUserEmail}
+          onChange={(e) => setNewUserEmail(e.target.value)}
+          variant="outlined"
+          size="small"
+          fullWidth
+          margin="dense"
+        />
+        <TextField
+          label="Password"
+          value={newUserPassword}
+          onChange={(e) => setNewUserPassword(e.target.value)}
+          variant="outlined"
+          size="small"
+          fullWidth
+          margin="dense"
+          type="password"
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={isSuperUser}
+              onChange={(e) => setIsSuperUser(e.target.checked)}
+              color="primary"
+            />
+          }
+          label="Super User"
+        />
+        <br></br>
+        <Button variant="contained" color="primary" onClick={handleCreateUser}>
+          Create User
+        </Button>
+        {userCreationError && (
+        <Typography variant="body2" color="error">
+          {userCreationError}
+        </Typography>
+      )}
+      {userCreationSuccess && (
+        <Typography variant="body2" color="green">
+          {userCreationSuccess}
+        </Typography>
+      )}
+      </Box>
       <Box mt={3}>
         <Typography variant="h5">All Users</Typography>
         <List>
