@@ -164,22 +164,18 @@ async function updateUser(req, res) {
       return;
     }
     const userId = req.params.id;
-    const { name, email, password, superUser, ...otherAttributes } = req.body;
+    const { name, email, password, superUser } = req.body;
     const user = await User.findById(userId);
     if(name !== null){
       user.name = name;
     }
-
     if(password !== null){
       user.password = password;
     }
 
-
     if(email !== null){
       user.email = email;
     }
-
-
     if(superUser !== null){
       user.superUser = superUser;
     }
